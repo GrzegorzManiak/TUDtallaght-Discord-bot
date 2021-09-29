@@ -1,5 +1,6 @@
 const discordJS = require('discord.js');
-let commands = {};
+let commands = {},
+    prefix = '.';
 
 const client = new discordJS.Client({
     intents: [
@@ -17,12 +18,20 @@ client.on('ready', () => {
 });
 
 //triggers everytime a message is sent.
-client.on("message", (message) => {
+client.on('messageCreate', (message) => {
     commandHandler(message);
 });
 
 function commandHandler(message) {
+    let charArray = message.content.split('');
+    if (charArray[0] !== prefix) return;
 
+    let splitMessage = message.content.split(' ');
+
+    let command = commands[splitMessage[0].substring(1).toLowerCase()]; //gives us the acutal command name
+    splitMessage.splice(0, 1); //Remove the initiator, aka the command being called
+
+    if (command !== undefined) command.callbackFunction([...splitMessage, message])
 }
 
 // {
@@ -31,5 +40,12 @@ function commandHandler(message) {
 //  description: a short description on what the command dose.
 // }
 exports.addCommand = function addCommand(params = { commandName, description, callbackFunction }) {
-    if (commands[params.commandName]) throw error('command already exists');
+    //Throw errors if not all required parameters are satisfied
+    if (commands[params.commandName]) throw new Error('A command with that name already exists');
+    if (params.commandName === undefined) throw new Error('No commandName provided');
+    if (params.callbackFunction === undefined) throw new Error('No callbackFunction provided');
+
+    commands[params.commandName] = params;
 }
+
+exports.setPrefix = function setPrefix(inp) { prefix = inp; };
