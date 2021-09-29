@@ -31,27 +31,86 @@ bot.addCommand({
             },
         };
 
+        let count = 0;
+        //loop tru every command available.
         Object.keys(global.commands).forEach(command => {
             let pass = false,
                 commandObj = global.commands[command];
 
             roles.forEach(role => {
                 if (commandObj.roles !== undefined) {
+                    //checks if the user has sufficient privileges to view the command.
                     if (commandObj.roles.includes(role)) pass = true;
                 } else pass = true
             });
 
             if (pass === true) {
                 helpEmbed.fields = [...helpEmbed.fields, {
-                    name: `${global.prefix}${commandObj.commandName}`,
-                    value: commandObj.description,
-                    inline: true,
+                    name: `${global.prefix}${commandObj.commandName}`, //Give the help entry a name
+                    value: commandObj.description, //Give the help entry a description
+                    inline: function() {
+                        if (++count % 3 === 0) return false; //every seccond item move onto a new line.
+                        else return true;
+                    }(),
                 }];
             }
         });
         message.channel.send({ embeds: [helpEmbed] });
     },
-    description: 'A command that displays all available commands',
+    description: 'A command that displays all available commands.',
+    roles: [
+        'user'
+    ]
+});
+
+//--// Manualy authenticate a user //--//
+bot.addCommand({
+    commandName: 'adduser',
+    callbackFunction: function(parameters, message, roles) {
+        message.channel.send('poo');
+    },
+    description: 'This command authenticates a user manualy.',
+    roles: [
+        'test'
+    ]
+});
+
+//--// removes a users authentication //--//
+bot.addCommand({
+    commandName: 'remuser',
+    callbackFunction: function(parameters, message, roles) {
+        message.channel.send('poo');
+    },
+    description: 'This command removes a users authentication.',
+    roles: [
+        'test'
+    ]
+});
+
+//--// get timetable //--//
+bot.addCommand({
+    commandName: 'timetable',
+    callbackFunction: function(parameters, message, roles) {
+        message.channel.send('timetable');
+    },
+    description: 'This command provides you with your timetable.',
+    roles: [
+        'user',
+        'test'
+    ]
+});
+
+//--// gets the next class and the room  //--//
+bot.addCommand({
+    commandName: 'next',
+    callbackFunction: function(parameters, message, roles) {
+        message.channel.send('timetable');
+    },
+    description: 'This command provides you with your timetable.',
+    roles: [
+        'user',
+        'test'
+    ]
 });
 
 // Loads the users discordId into cache for a set ammount of time
