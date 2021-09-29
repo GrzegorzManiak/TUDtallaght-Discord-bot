@@ -1,0 +1,26 @@
+{
+    "name": "neet-boilerplate-code",
+    "version": "1.0.0",
+    "description": "Boilerplate code for NEET, Node.js, Express.js, Ejs and Tailwind Css.",
+    "main": "index.js",
+    "scripts": {
+        "build:css": "node views/tailwind_src/compile.js",
+        "debug": "nodemon index.js",
+        "main": "node index.js"
+    },
+    "author": "GrzegorzM",
+    "license": "GNU",
+    "homepage": "https://github.com/KetamineKyle/NodeExpressEjsTcss",
+    "dependencies": {
+        "autoprefixer": "^10.3.0",
+        "cors": "^2.8.5",
+        "ejs": "^3.1.0",
+        "express": "^4.17.0",
+        "vhost": "^3.0.0"
+    },
+    "devDependencies": {
+        "tailwindcss": "^2.2.9",
+        "nodemon": "^2.0.0",
+        "win-node-env": "^0.4.0"
+    }
+}
