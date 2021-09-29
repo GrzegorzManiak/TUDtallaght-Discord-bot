@@ -12,6 +12,9 @@ global.domain = 'localhost';
 //--// Configuration for the discord bot
 global.config = {
     serverID: 892820301224751175, // The bot will only work in this server.
+    adminRoleID: [
+        'test'
+    ]
 }
 
 //--// Set to true for express to use user provided certs, 

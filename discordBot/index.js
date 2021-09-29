@@ -9,10 +9,10 @@ bot.setPrefix('.');
 
 bot.addCommand({
     commandName: 'help',
-    callbackFunction: function(input) {
-        console.log(input)
+    callbackFunction: function(parameters, message) {
+        message.channel.send('poo');
     },
-    description: 'A command that displays all available commands'
+    description: 'A command that displays all available commands',
 });
 
 // Loads the users discordId into cache for a set ammount of time
