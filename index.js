@@ -9,6 +9,11 @@ http.disable("x-powered-by");
 //--// Your domain name or localhost
 global.domain = 'localhost';
 
+//--// Configuration for the discord bot
+global.config = {
+    serverID: 892820301224751175, // The bot will only work in this server.
+}
+
 //--// Set to true for express to use user provided certs, 
 //--// Can be used inconjunction with Cloudflare's Origin CA certificates.
 const ssl = false,
@@ -24,7 +29,8 @@ createSubdomains({
     subDomains: {
         //--// Subdomain_name: 'path to router',
         www: './router/www',
-        content: './router/content'
+        content: './router/content',
+        discord: './router/discord'
     }
 });
 
