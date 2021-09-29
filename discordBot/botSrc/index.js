@@ -1,6 +1,7 @@
 const discordJS = require('discord.js');
-let commands = {},
-    prefix = '.';
+
+global.prefix = '.';
+global.commands = {};
 
 const client = new discordJS.Client({
     intents: [
@@ -22,22 +23,27 @@ client.on('messageCreate', (message) => {
     commandHandler(message);
 });
 
-function commandHandler(message, hasPremissions = false) {
+function commandHandler(message, hasPremissions = false, roles = []) {
     let charArray = message.content.split('');
-    if (charArray[0] !== prefix) return;
+    if (charArray[0] !== global.prefix) return;
 
+    // Splits the message content up into words eg => a b c = ['a','b','c']
     let splitMessage = message.content.split(' ');
-    let command = commands[splitMessage[0].substring(1).toLowerCase()]; //gives us the acutal command name
 
-    if (command.roles !== undefined && command.roles.length > 0) message.member.roles.cache.some(role => {
-        command.roles.forEach(inp => {
-            if (inp.toLowerCase() === role.name.toLowerCase()) hasPremissions = true;
+    //gives us the acutal command name by getting the first word and dropping the prefix character
+    let command = global.commands[splitMessage[0].substring(1).toLowerCase()];
+
+    //checks if the command requires a roll to execute.
+    message.member.roles.cache.map(m => roles = [...roles, m.name]);
+
+    if (command.roles !== undefined && command.roles.length > 0) {
+        roles.forEach(hasRole => {
+            if (command.roles.includes(hasRole)) hasPremissions = true;
         });
-    });
-    else hasPremissions = true;
+    } else hasPremissions = true;
 
     if (hasPremissions === false) message.channel.send(`${message.member} You dont have the sufficient privileges to execute this command.`);
-    else if (command !== undefined) command.callbackFunction(splitMessage, message)
+    else if (command !== undefined) command.callbackFunction(splitMessage, message, roles)
 }
 
 // {
@@ -52,7 +58,5 @@ exports.addCommand = function addCommand(params = { commandName, description, ca
     if (params.commandName === undefined) throw new Error('No commandName provided');
     if (params.callbackFunction === undefined) throw new Error('No callbackFunction provided');
 
-    commands[params.commandName] = params;
+    global.commands[params.commandName] = params;
 }
-
-exports.setPrefix = function setPrefix(inp) { prefix = inp; };

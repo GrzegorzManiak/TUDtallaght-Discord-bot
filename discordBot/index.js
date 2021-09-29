@@ -5,12 +5,51 @@ global.botid = tokens.botid;
 
 let bot = require('./botSrc');
 
-bot.setPrefix('.');
+global.prefix = '.';
 
+//--// help command //--//
 bot.addCommand({
     commandName: 'help',
-    callbackFunction: function(parameters, message) {
-        message.channel.send('poo');
+    callbackFunction: function(parameters, message, roles) {
+        let helpEmbed = {
+            color: 0x0099ff,
+            title: 'Here are all the available commands!',
+            url: 'https://github.com/KetamineKyle/TUDtallaght-Discord-bot',
+            description: 'To get more info about a command, just type **help** than the command inquestion after it!',
+            thumbnail: {
+                url: 'https://cdn.discordapp.com/avatars/892820433592803400/61cdf5225f23d50315ada918b4c4efc8.webp?size=80',
+            },
+            fields: [{
+                name: '\u200b',
+                value: '\u200b',
+                inline: false,
+            }],
+            timestamp: new Date(),
+            footer: {
+                text: 'Made by Grzegorz M',
+                icon_url: 'https://cdn.discordapp.com/avatars/892820433592803400/61cdf5225f23d50315ada918b4c4efc8.webp?size=80',
+            },
+        };
+
+        Object.keys(global.commands).forEach(command => {
+            let pass = false,
+                commandObj = global.commands[command];
+
+            roles.forEach(role => {
+                if (commandObj.roles !== undefined) {
+                    if (commandObj.roles.includes(role)) pass = true;
+                } else pass = true
+            });
+
+            if (pass === true) {
+                helpEmbed.fields = [...helpEmbed.fields, {
+                    name: `${global.prefix}${commandObj.commandName}`,
+                    value: commandObj.description,
+                    inline: true,
+                }];
+            }
+        });
+        message.channel.send({ embeds: [helpEmbed] });
     },
     description: 'A command that displays all available commands',
 });
