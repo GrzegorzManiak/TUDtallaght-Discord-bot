@@ -19,30 +19,38 @@ exports.command = {
     callbackFunction: function(parameters, message, roles, allRoles = []) {
         //Return and throw an error if the cahannel Id provied is incorect
         let channel = global.client.channels.cache.get(parameters[1]);
+        let guild = global.client.guilds.resolve(message.guildId);
         if (channel === undefined)
             return message.channel.send('Invalid parameter, could not locate the channel.'); //Inform the user that the command failed
 
         //Return and throw an error if the provided role is incorect
-        global.client.guilds.resolve(message.guildId).roles.cache.map(m => allRoles = [...allRoles, m.name]);
+        guild.roles.cache.map(m => allRoles = [...allRoles, m.name]);
         if (parameters[2] === undefined || allRoles.includes(parameters[2]) === false)
             return message.channel.send('Invalid parameter, could not locate role.'); //Inform the user that the command failed
 
+        let email = new global.discordjs.MessageActionRow()
+            .addComponents(
+                new global.discordjs.MessageButton()
+                .setCustomId(`button,help,close,${message.guildId}`)
+                .setLabel("Verify")
+                .setStyle('PRIMARY')
+            );
+
         //Send out the embed
-        channel.send({ embeds: [helpEmbed(parameters[2])], fetchReply: true }).then(returnedMsg => {
-            //add an reaction to the embed
-            returnedMsg.react('📧');
+        channel.send({ embeds: [helpEmbed(parameters[2])], components: [email], fetchReply: true }).then(returnedMsg => {
+            message.delete();
         });
     },
 
-    reactionAddCallback: function(reactionEmojie, message, roles) {
-        console.log(reactionEmojie)
+    reactionAddCallback: function(reactionEmojie, message, reaction, roles) {
+        console.log(reaction.emoji.reaction.message.delete())
     },
     helpEmbedPage: -1,
     description: 'This command spawns the auth msg for users to link their accs.',
     roles: [
         'test'
     ],
-    reactionRoles: [
+    buttonRoles: [
         'user'
     ]
 }

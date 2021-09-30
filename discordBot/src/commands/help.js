@@ -76,10 +76,20 @@ exports.command = {
 
         });
 
+        let sendCloseBtn = function(id) {
+            return new global.discordjs.MessageActionRow()
+                .addComponents(
+                    new global.discordjs.MessageButton()
+                    .setCustomId(`button,help,close,${message.guildId},${id}`)
+                    .setLabel("Close")
+                    .setStyle('DANGER')
+                );
+        }
+
         // Send out the embed
         message.channel.send({ embeds: [helpEmbed], fetchReply: true }).then(returnedMsg => {
             // add an close reaction to the embed, only if admin page is disabled.
-            if (adminHelp === false) returnedMsg.react('❌');
+            if (adminHelp === false) returnedMsg.edit({ components: [sendCloseBtn(returnedMsg.id)] })
             else if (adminHelp === true) {
 
                 // Add a refrence to the above panel.
@@ -89,7 +99,7 @@ exports.command = {
                 message.channel.send({ embeds: [adminEmbed], fetchReply: true }).then(returnedMsg => {
 
                     // add an close reaction to the embed
-                    returnedMsg.react('❌');
+                    returnedMsg.edit({ components: [sendCloseBtn(returnedMsg.id)] })
 
                     // remove the msg that called the command.
                     message.delete();
@@ -99,27 +109,27 @@ exports.command = {
         });
     },
 
-    reactionAddCallback: function(reactionEmojie, message, roles) {
-        if (reactionEmojie !== '❌') return;
+    buttonClickCallback: function(message, interaction, parameters, roles) {
+        console.log(message)
+            /*if (reactionEmojie !== '❌') return;
+            message.embeds.forEach(embed => {
+                //grab the command refrence at the footer of every embed
+                //check if the message has a child
+                let childRefrence = /\[(.+)\]/gm.exec(embed.footer.text)[1].split(',')[2];
+                if (childRefrence === undefined) return;
 
-        message.embeds.forEach(embed => {
-            //grab the command refrence at the footer of every embed
-            //check if the message has a child
-            let childRefrence = /\[(.+)\]/gm.exec(embed.footer.text)[1].split(',')[2];
-            if (childRefrence === undefined) return;
+                //if the emebed has a child, fetch it and destroy it too.
+                message.channel.messages.fetch(childRefrence)
+                    .then(message => message.delete())
+            });
 
-            //if the emebed has a child, fetch it and destroy it too.
-            message.channel.messages.fetch(childRefrence)
-                .then(message => message.delete())
-        });
-
-        message.delete();
+            message.delete();*/
     },
     description: 'A command that displays all available commands.',
     roles: [
         'user'
     ],
-    reactionRoles: [
+    buttonRoles: [
         'user'
     ]
 }
