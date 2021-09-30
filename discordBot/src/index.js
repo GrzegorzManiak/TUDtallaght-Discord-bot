@@ -27,12 +27,13 @@ function getUserRolesFromMessage(message, roles = []) {
 }
 
 //checks if the user has sufficient privileges to preform an action.
-function checkPermisions(roles, command, pass = false) {
-    if (command !== undefined && command.roles !== undefined && command.roles.length > 0) {
-        roles.forEach(hasRole => {
-            if (command.roles.includes(hasRole) === true) pass = true;
-        });
-    } else pass = true;
+function checkPermisions(requiredRoles, usersRoles, pass = false) {
+    if (requiredRoles.length < 1) return true;
+
+    usersRoles.forEach(role => {
+        if (requiredRoles.includes(role)) pass = true
+    });
+
     return pass;
 }
 
@@ -43,15 +44,17 @@ client.on('messageCreate', async(message) => {
 
 function commandHandler(message) {
     let charArray = message.content.split('');
+
+    // If the message dosent begin with the command prefix, return.
     if (charArray[0] !== global.prefix) return;
 
     // Splits the message content up into words eg => a b c = ['a','b','c']
     let splitMessage = message.content.split(' ');
 
-    //gives us the acutal command name by getting the first word and dropping the prefix character
+    // gives us the acutal command name by getting the first word and dropping the prefix character
     let command = global.commands[splitMessage[0].substring(1).toLowerCase()],
         userRoles = getUserRolesFromMessage(message),
-        hasPremissions = checkPermisions(userRoles, command);
+        hasPremissions = checkPermisions(userRoles, command.roles);
 
     if (hasPremissions === false) message.channel.send(`${message.member} You dont have the sufficient privileges to execute this command.`);
     else if (command !== undefined) command.callbackFunction(splitMessage, message, userRoles)
@@ -62,14 +65,10 @@ client.on('messageReactionAdd', async(reaction, user) => {
     reactionHandler(reaction, user, false);
 });
 
-async function reactionHandler(reaction, user, removeReaction) {
-    //[TODO]// need to make it so it checks if the user has sufficient privileges to add/remove a reaction
-    /*
+async function reactionHandler(reaction, user, removeReaction, roles = []) {
     const message = !reaction.message.author ?
         await reaction.message.fetch() :
         reaction.message;
-    
-    //let guild = message.gi
 
     // if its a reaction to anything else than the bot, ignore it.
     if (message.author.id !== client.user.id) return;
@@ -78,26 +77,41 @@ async function reactionHandler(reaction, user, removeReaction) {
     if (message.author.id === user.id) return;
 
     // regex that grabs the command identifier in the embeds footer.
-    const regex = /\[(.+)\]/gm;
+    let regex = /\[(.+)\]/gm;
+
+    // grab the current guild
+    let guild = client.guilds.cache.get(message.guildId);
+
+    // grab the current user
+    let member = guild.members.cache.get(user.id);
+
+    // get all the users roles and add them the the 'roles' array
+    member.roles.cache.map(m => roles = [...roles, m.name.toLowerCase()]);
 
     if (message.embeds !== undefined) message.embeds.forEach(embed => {
-        let commandRefrence = regex.exec(embed.footer.text)[1].split(',');
+        //grab the command refrence at the footer of every embed
+        let commandRefrence = regex.exec(embed.footer.text)[1].split(','),
+            command = global.commands[commandRefrence[0].toLowerCase()],
+            reactionEmojie = reaction._emoji.name;
 
-        if (Object.keys(global.commands).includes(commandRefrence[0])) {
-            //console.log(reaction.users.reaction.users.reaction.message)
-                //user.member.roles.cache.map(m => console.log(m.name))
-                //let hasPremissions = checkPermisions(reaction.message.author, global.commands[commandRefrence[0]]);
-                //console.log(hasPremissions, getUserRoles(reaction.message.author))
+        //Check if the user containts the right premisions to react
+        if (checkPermisions(roles, command.reactionRoles) !== true) return;
+        switch (removeReaction) {
+            case false: //User added a reaction
+                return command.reactionAddCallback(reactionEmojie, message, roles)
         }
-    })*/
+    })
 }
 
+//TODO// I need to make this cleaner as and refactor it, right now im slapping things onto this as I need them.
 // {
 //  commandName: the name of the command, also used to actual call the command,
-//  callbackFunction: must take one parameter, will be exectued when the user calls the command,
+//  callbackFunction(parameters, message, userroles): must take one parameter, will be exectued when the user calls the command,
 //  description: a short description on what the command dose.
 //  roles: [] an array of all the roles that can use this command
-//  reactionAddCallback: function called upon once a reaction is added to the message
+//  reactionRoles: [] an array of all the roles that can react to this command
+//  reactionAddCallback(reactionEmojie, message, userroles): function called upon once a reaction is added to the message
+//  reactionRemCallback(reactionEmojie, message, userroles): function called upon once a reaction is removed from the message
 // }
 exports.addCommand = function addCommand(params = { commandName, description, callbackFunction, roles: [] }) {
     //Throw errors if not all required parameters are satisfied
@@ -105,5 +119,16 @@ exports.addCommand = function addCommand(params = { commandName, description, ca
     if (params.commandName === undefined) throw new Error('No commandName provided');
     if (params.callbackFunction === undefined) throw new Error('No callbackFunction provided');
 
+    if (params.roles === undefined) params.roles = [];
+    if (params.reactionRoles === undefined) params.reactionRoles = [];
     global.commands[params.commandName.toLowerCase()] = params;
+}
+
+// Loads the users discordId into cache for a set ammount of time
+// it also creates a link for the user to be able to click which 
+// prompts them to log in with their school email.
+//
+// discordId - String - the users actual uniqe discord ID
+function createConfirmationRequest(discordId) {
+
 }

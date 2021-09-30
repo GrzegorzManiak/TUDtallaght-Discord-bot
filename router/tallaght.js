@@ -9,7 +9,7 @@ http.use(cors({
     methods: ['POST']
 }));
 
-http.post('/', (req, res) => {
+http.get('/', (req, res) => {
     res.sendStatus(200);
     res.end();
 });
