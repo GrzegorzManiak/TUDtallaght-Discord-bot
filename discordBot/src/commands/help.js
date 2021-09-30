@@ -1,4 +1,4 @@
-//Embed for any command with a helpEmbedPage: 0 or none.
+// Embed for any command with a helpEmbedPage: 0 or none.
 let helpEmbed = {
     color: 0x0099ff,
     title: 'Here are all the available commands!',
@@ -18,7 +18,7 @@ let helpEmbed = {
     },
 };
 
-//Embed for any command with a helpEmbedPage: -1, reserved for admin commands.
+// Embed for any command with a helpEmbedPage: -1, reserved for admin commands.
 let adminEmbed = {
     color: 0x0099ff,
     title: 'Here are all the available admin commands!',
@@ -30,12 +30,11 @@ let adminEmbed = {
     },
 };
 
-
 exports.command = {
     commandName: 'help',
     callbackFunction: function(parameters, message, roles) {
 
-        //loop tru every command available.
+        // loop tru every command available.
         let counters = { helpEmbed: 0, adminEmbed: 0 },
             adminHelp = false;
 
@@ -43,11 +42,11 @@ exports.command = {
             let pass = false,
                 commandObj = global.commands[command];
 
-            //for each role that the user has
+            // for each role that the user has
             roles.forEach(role => {
-                //check if the command in qustion requires any special roles, if not, let the user continue
+                // check if the command in qustion requires any special roles, if not, let the user continue
                 if (commandObj.roles !== undefined) {
-                    //checks if the user has sufficient privileges to view the command.
+                    // checks if the user has sufficient privileges to view the command.
                     if (commandObj.roles.includes(role)) pass = true;
                 } else pass = true
             });
@@ -56,48 +55,71 @@ exports.command = {
             if (pass !== true) return;
 
             let currentEmbed = helpEmbed;
-            if (commandObj.helpEmbedPage === undefined || commandObj.helpEmbedPage === 0) { //Helpembed
+            if (commandObj.helpEmbedPage === undefined || commandObj.helpEmbedPage === 0) { // Helpembed
                 currentEmbed = helpEmbed; // set the current embed to that of the base embed
                 count = ++counters.helpEmbed;
-            } else if (commandObj.helpEmbedPage === -1) { //adminEmbed
+            } else if (commandObj.helpEmbedPage === -1) { // adminEmbed
                 currentEmbed = adminEmbed; // set the current embed to that of the admin embed
                 count = ++counters.adminEmbed;
                 adminHelp = true;
             };
 
-            //add command name and description to the embed.
+            // add command name and description to the embed.
             currentEmbed.fields = [...currentEmbed.fields, {
-                name: `${global.prefix}${commandObj.commandName}`, //Give the help entry a name
-                value: commandObj.description, //Give the help entry a description
+                name: `${global.prefix}${commandObj.commandName}`, // Give the help entry a name
+                value: commandObj.description, // Give the help entry a description
                 inline: function() {
-                    if (count % 3 === 0) return false; //every seccond item move onto a new line.
+                    if (count % 3 === 0) return false; // every seccond item move onto a new line.
                     else return true;
                 }(),
             }];
 
         });
 
-        //Send out the embed
+        // Send out the embed
         message.channel.send({ embeds: [helpEmbed], fetchReply: true }).then(returnedMsg => {
-            //add an close reaction to the embed, only if admin page is disabled.
+            // add an close reaction to the embed, only if admin page is disabled.
             if (adminHelp === false) returnedMsg.react('❌');
             else if (adminHelp === true) {
 
-                //Add a refrence to the above panel.
+                // Add a refrence to the above panel.
                 adminEmbed.footer.text += `[help,0,${returnedMsg.id}]`;
 
-                //Send out the embed with admin commands
+                // Send out the embed with admin commands
                 message.channel.send({ embeds: [adminEmbed], fetchReply: true }).then(returnedMsg => {
 
-                    //add an close reaction to the embed
+                    // add an close reaction to the embed
                     returnedMsg.react('❌');
+
+                    // remove the msg that called the command.
+                    message.delete();
                 });
             }
 
         });
     },
+
+    reactionAddCallback: function(reactionEmojie, message, roles) {
+        if (reactionEmojie !== '❌') return;
+
+        message.embeds.forEach(embed => {
+            //grab the command refrence at the footer of every embed
+            //check if the message has a child
+            let childRefrence = /\[(.+)\]/gm.exec(embed.footer.text)[1].split(',')[2];
+            if (childRefrence === undefined) return;
+
+            //if the emebed has a child, fetch it and destroy it too.
+            message.channel.messages.fetch(childRefrence)
+                .then(message => message.delete())
+        });
+
+        message.delete();
+    },
     description: 'A command that displays all available commands.',
     roles: [
+        'user'
+    ],
+    reactionRoles: [
         'user'
     ]
 }

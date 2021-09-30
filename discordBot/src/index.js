@@ -52,8 +52,12 @@ function commandHandler(message) {
     let splitMessage = message.content.split(' ');
 
     // gives us the acutal command name by getting the first word and dropping the prefix character
-    let command = global.commands[splitMessage[0].substring(1).toLowerCase()],
-        userRoles = getUserRolesFromMessage(message),
+    let command = global.commands[splitMessage[0].substring(1).toLowerCase()];
+
+    // check if the command acutaly exists
+    if (command === undefined) return;
+
+    let userRoles = getUserRolesFromMessage(message),
         hasPremissions = checkPermisions(userRoles, command.roles);
 
     if (hasPremissions === false) message.channel.send(`${message.member} You dont have the sufficient privileges to execute this command.`);
@@ -76,9 +80,6 @@ async function reactionHandler(reaction, user, removeReaction, roles = []) {
     // if its the bot reacting to its self, ignore it.
     if (message.author.id === user.id) return;
 
-    // regex that grabs the command identifier in the embeds footer.
-    let regex = /\[(.+)\]/gm;
-
     // grab the current guild
     let guild = client.guilds.cache.get(message.guildId);
 
@@ -90,7 +91,7 @@ async function reactionHandler(reaction, user, removeReaction, roles = []) {
 
     if (message.embeds !== undefined) message.embeds.forEach(embed => {
         //grab the command refrence at the footer of every embed
-        let commandRefrence = regex.exec(embed.footer.text)[1].split(','),
+        let commandRefrence = /\[(.+)\]/gm.exec(embed.footer.text)[1].split(','),
             command = global.commands[commandRefrence[0].toLowerCase()],
             reactionEmojie = reaction._emoji.name;
 

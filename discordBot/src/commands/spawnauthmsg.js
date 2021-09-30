@@ -17,7 +17,6 @@ let helpEmbed = function(roleName) {
 exports.command = {
     commandName: 'spawnAuthMsg',
     callbackFunction: function(parameters, message, roles, allRoles = []) {
-
         //Return and throw an error if the cahannel Id provied is incorect
         let channel = global.client.channels.cache.get(parameters[1]);
         if (channel === undefined)
@@ -34,6 +33,7 @@ exports.command = {
             returnedMsg.react('📧');
         });
     },
+
     reactionAddCallback: function(reactionEmojie, message, roles) {
         console.log(reactionEmojie)
     },
