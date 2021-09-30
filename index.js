@@ -2,8 +2,10 @@ const exp = require('express'),
     http = exp(),
     vhost = require('vhost'),
     https = require('https'),
-    resolve = require('path').resolve;
+    resolve = require('path').resolve,
+    nodeCache = require("node-cache");
 
+global.cache = new nodeCache();
 http.disable("x-powered-by");
 
 //--// Your domain name or localhost

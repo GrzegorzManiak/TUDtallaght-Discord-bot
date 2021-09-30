@@ -1,5 +1,5 @@
 // Embed for any command with a helpEmbedPage: 0 or none.
-let helpEmbed = {
+const helpEmbedTemplate = {
     color: 0x0099ff,
     title: 'Here are all the available commands!',
     url: 'https://github.com/KetamineKyle/TUDtallaght-Discord-bot',
@@ -19,7 +19,7 @@ let helpEmbed = {
 };
 
 // Embed for any command with a helpEmbedPage: -1, reserved for admin commands.
-let adminEmbed = {
+const adminEmbedTemplate = {
     color: 0x0099ff,
     title: 'Here are all the available admin commands!',
     url: 'https://github.com/KetamineKyle/TUDtallaght-Discord-bot',
@@ -33,6 +33,9 @@ let adminEmbed = {
 exports.command = {
     commandName: 'help',
     callbackFunction: function(parameters, message, roles) {
+        //clone the embed templates so that we dont edit it directly
+        let adminEmbed = Object.assign({}, adminEmbedTemplate);
+        let helpEmbed = Object.assign({}, helpEmbedTemplate);
 
         // loop tru every command available.
         let counters = { helpEmbed: 0, adminEmbed: 0 },
@@ -88,21 +91,22 @@ exports.command = {
 
         // Send out the embed
         message.channel.send({ embeds: [helpEmbed], fetchReply: true }).then(returnedMsg => {
+
+            // remove the msg that called the command.
+            message.delete();
+
             // add an close reaction to the embed, only if admin page is disabled.
             if (adminHelp === false) returnedMsg.edit({ components: [sendCloseBtn(returnedMsg.id)] })
             else if (adminHelp === true) {
 
                 // Add a refrence to the above panel.
-                adminEmbed.footer.text += `[help,0,${returnedMsg.id}]`;
+                adminEmbed.footer.text = `Made by Grzegorz M | [help,0,${returnedMsg.id}]`;
 
                 // Send out the embed with admin commands
                 message.channel.send({ embeds: [adminEmbed], fetchReply: true }).then(returnedMsg => {
 
                     // add an close reaction to the embed
                     returnedMsg.edit({ components: [sendCloseBtn(returnedMsg.id)] })
-
-                    // remove the msg that called the command.
-                    message.delete();
                 });
             }
 
@@ -110,20 +114,19 @@ exports.command = {
     },
 
     buttonClickCallback: function(message, interaction, parameters, roles) {
-        console.log(message)
-            /*if (reactionEmojie !== '❌') return;
-            message.embeds.forEach(embed => {
-                //grab the command refrence at the footer of every embed
-                //check if the message has a child
-                let childRefrence = /\[(.+)\]/gm.exec(embed.footer.text)[1].split(',')[2];
-                if (childRefrence === undefined) return;
+        if (parameters[2] !== 'close') return;
+        message.embeds.forEach(embed => {
+            // grab the command refrence at the footer of every embed
+            // check if the message has a child
+            let childRefrence = /\[(.+)\]/gm.exec(embed.footer.text)[1].split(',')[2];
+            if (childRefrence === undefined) return;
 
-                //if the emebed has a child, fetch it and destroy it too.
-                message.channel.messages.fetch(childRefrence)
-                    .then(message => message.delete())
-            });
+            // delete its children
+            message.channel.messages.fetch(childRefrence)
+                .then(message => message.delete());
+        });
 
-            message.delete();*/
+        message.delete();
     },
     description: 'A command that displays all available commands.',
     roles: [

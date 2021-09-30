@@ -62,7 +62,7 @@ function commandHandler(message) {
         hasPremissions = checkPermisions(userRoles, command.roles);
 
     if (hasPremissions === false) message.channel.send(`${message.member} You dont have the sufficient privileges to execute this command.`);
-    else if (command !== undefined) command.callbackFunction(splitMessage, message, userRoles)
+    else command.callbackFunction(splitMessage, message, userRoles)
 }
 
 //triggers everytime a reaction is added to a msg sent from the bot

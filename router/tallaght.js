@@ -10,8 +10,7 @@ http.use(cors({
 }));
 
 http.get('/', (req, res) => {
-    res.sendStatus(200);
-    res.end();
+
 });
 
 //--// Return a '400 bad request' if the page isint found or the wrong method is used
