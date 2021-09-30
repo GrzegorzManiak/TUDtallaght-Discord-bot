@@ -10,7 +10,15 @@ http.use(cors({
 }));
 
 http.get('/', (req, res) => {
+    let id = req.query.identifier;
 
+    if (id === undefined || global.cache.get(id) === undefined) {
+        res.send('bad2');
+    } else {
+        console.log(global.cache.get(id))
+        res.send('good');
+    }
+    console.log(global.cache.get(id))
 });
 
 //--// Return a '400 bad request' if the page isint found or the wrong method is used
