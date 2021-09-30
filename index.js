@@ -7,7 +7,7 @@ const exp = require('express'),
 http.disable("x-powered-by");
 
 //--// Your domain name or localhost
-global.domain = 'localhost';
+global.domain = 'gregs.software';
 
 //--// Configuration for the discord bot
 global.config = {
@@ -33,7 +33,7 @@ createSubdomains({
         //--// Subdomain_name: 'path to router',
         www: './router/www',
         content: './router/content',
-        discord: './router/discord'
+        tallaght: './router/tallaght'
     }
 });
 
