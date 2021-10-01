@@ -14,10 +14,13 @@ global.domain = 'gregs.software';
 //--// Configuration for the discord bot
 global.config = {
     serverID: 892820301224751175, // The bot will only work in this server.
+    academicYear: '2021-2022',
     adminRoleID: [
         'test'
     ]
 }
+
+require('./timetableHandler')
 
 //--// Set to true for express to use user provided certs, 
 //--// Can be used inconjunction with Cloudflare's Origin CA certificates.
