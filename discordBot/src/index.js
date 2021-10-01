@@ -3,6 +3,7 @@ const client = new discordJS.Client({
     intents: [
         discordJS.Intents.FLAGS.GUILDS, //Give the bot access to its connected guilds, should only be one tho.
         discordJS.Intents.FLAGS.GUILD_MESSAGES, //Give it the ability to see incoming messages.
+        discordJS.Intents.FLAGS.DIRECT_MESSAGES, //Give it the ability to see incoming messages.
         discordJS.Intents.FLAGS.GUILD_MESSAGE_REACTIONS //Gives the bot the ability to check for and add reactions
     ],
     partials: ['MESSAGE', 'CHANNEL', 'REACTION']
@@ -40,10 +41,18 @@ function checkPermisions(requiredRoles, usersRoles, pass = false) {
 
 // triggers everytime a message is sent.
 client.on('messageCreate', async(message) => {
-    commandHandler(message);
+    switch (message.channel.type) {
+        case 'DM':
+            dmCommandHandler(message);
+            break;
+
+        case 'GUILD_TEXT':
+            guildTextCommandHandler(message);
+            break;
+    }
 });
 
-function commandHandler(message) {
+function guildTextCommandHandler(message) {
     let charArray = message.content.split('');
 
     // If the message dosent begin with the command prefix, return.
@@ -63,6 +72,37 @@ function commandHandler(message) {
 
     if (hasPremissions === false) message.channel.send(`${message.member} You dont have the sufficient privileges to execute this command.`);
     else command.callbackFunction(splitMessage, message, userRoles)
+}
+
+function dmCommandHandler(message, roles = []) {
+    let charArray = message.content.split('');
+
+    // If the message dosent begin with the command prefix, return.
+    if (charArray[0] !== global.prefix) return;
+
+    // Splits the message content up into words eg => a b c = ['a','b','c']
+    let splitMessage = message.content.split(' ');
+
+    // gives us the acutal command name by getting the first word and dropping the prefix character
+    let command = global.commands[splitMessage[0].substring(1).toLowerCase()];
+
+    // check if the command acutaly exists
+    if (command === undefined) return;
+
+    // grab the current guild
+    let guild = client.guilds.cache.get('892820301224751175');
+
+    // grab the current user
+    guild.members.fetch(message.author.id).then(user => {
+
+        // get all the users roles and add them the the 'roles' array
+        user.roles.cache.map(m => roles = [...roles, m.name.toLowerCase()]);
+
+        let hasPremissions = checkPermisions(roles, command.roles);
+
+        if (hasPremissions === false) message.channel.send(`${message.member} You dont have the sufficient privileges to execute this command.`);
+        else command.dmCallbackFunction(splitMessage, message, roles)
+    });
 }
 
 //triggers everytime a reaction is added to a msg sent from the bot
