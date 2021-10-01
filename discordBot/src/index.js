@@ -172,5 +172,5 @@ exports.addCommand = function addCommand(params = { commandName, description, ca
 global.createTimedDelete = async function createTimedDelete(message, time) {
     setTimeout(() => {
         message.delete().catch(() => {});
-    }, time * 60);
+    }, time * 6000);
 }

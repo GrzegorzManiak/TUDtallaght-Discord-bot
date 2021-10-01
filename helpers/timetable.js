@@ -70,7 +70,7 @@ exports.fetchTimetable = function fetchTimetable(timetableCode) {
             id++;
         });
 
-        if (procesedEntry.day !== undefined) procesedTable[procesedEntry.day] += procesedEntry
+        if (procesedEntry.day !== undefined) procesedTable[procesedEntry.day] = [...procesedTable[procesedEntry.day], procesedEntry]
     });
 
     // Make sure that we cache the request for 24h so that we dont constantly ping the endpoint
