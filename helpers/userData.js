@@ -5,6 +5,6 @@ exports.getUserData = function getUserData(userID) {
         name: ['grzegorz', 'maniak'],
         email: 'X00189661@myTUDublin.ie',
         studentid: 'X00189661',
-        classgroup: '1b1'
+        classgroup: 'b1'
     }
 }
