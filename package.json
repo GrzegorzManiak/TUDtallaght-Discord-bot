@@ -34,11 +34,12 @@
         "isomorphic-fetch": "^3.0.0",
         "morgan": "^1.10.0",
         "node-cache": "^5.1.2",
+        "sync-fetch": "^0.3.0",
         "vhost": "^3.0.0",
         "windows-iana": "^5.0.2"
     },
     "devDependencies": {
-        "nodemon": "^2.0.0",
+        "nodemon": "^2.0.13",
         "tailwindcss": "^2.2.9",
         "win-node-env": "^0.4.0"
     }
