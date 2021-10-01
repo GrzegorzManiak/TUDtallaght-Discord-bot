@@ -7,7 +7,7 @@ let commandDirectory = './src/commands/';
 //--// help command //--//
 bot.addCommand(require(commandDirectory + 'help.js').command);
 
-//--// spawns aan message to allow users to verify their emails //--//
+//--// spawns a message to allow users to verify their emails //--//
 bot.addCommand(require(commandDirectory + 'spawnauthmsg.js').command);
 
 //--// Manualy authenticate a user //--//
@@ -36,18 +36,8 @@ bot.addCommand({
     ]
 });
 
-//--// get timetable //--//
-bot.addCommand({
-    commandName: 'timeTable',
-    callbackFunction: function(parameters, message, roles) {
-        message.channel.send('timetable');
-    },
-    description: 'This command provides you with your timetable.',
-    roles: [
-        'user',
-        'test'
-    ]
-});
+//--// get users timetable //--//
+bot.addCommand(require(commandDirectory + 'timetable.js').command);
 
 //--// gets the next class and the room  //--//
 bot.addCommand({
