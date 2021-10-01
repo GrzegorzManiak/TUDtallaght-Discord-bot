@@ -101,7 +101,7 @@ function dmCommandHandler(message, roles = []) {
         let hasPremissions = checkPermisions(roles, command.roles);
 
         if (hasPremissions === false) message.channel.send(`${message.member} You dont have the sufficient privileges to execute this command.`);
-        else command.dmCallbackFunction(splitMessage, message, roles)
+        else command.callbackFunction(splitMessage, message, roles)
     });
 }
 
@@ -170,8 +170,15 @@ async function buttonHandler(interaction, parameters, roles = []) {
         interaction.message;
 
     // grab the current user
-    let member = interaction.guild.members.cache.get(interaction.user.id),
-        command = global.commands[parameters[1].toLowerCase()];
+    let member;
+
+    if (message.channel.type === 'GUILD_TEXT') member = interaction.guild.members.cache.get(interaction.user.id);
+    else {
+        let guild = client.guilds.cache.get('892820301224751175');
+        member = await guild.members.fetch(interaction.user.id);
+    }
+
+    command = global.commands[parameters[1].toLowerCase()];
 
     // check if the command exists
     if (command === undefined) return;
@@ -212,5 +219,5 @@ exports.addCommand = function addCommand(params = { commandName, description, ca
 global.createTimedDelete = async function createTimedDelete(message, time) {
     setTimeout(() => {
         message.delete().catch(() => {});
-    }, time * 6000);
+    }, time * 60000);
 }
