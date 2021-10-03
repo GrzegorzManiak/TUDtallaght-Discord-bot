@@ -31,7 +31,7 @@ const adminEmbedTemplate = {
 };
 
 exports.command = {
-    commandName: 'help',
+    commandName: 'Help',
     callbackFunction: function(parameters, message, roles) {
         //clone the embed templates so that we dont edit it directly
         let adminEmbed = Object.assign({}, adminEmbedTemplate);
@@ -133,6 +133,7 @@ exports.command = {
 
         message.delete();
     },
+    canExecInDm: true,
     description: 'A command that displays all available commands.',
     roles: [
         'user'

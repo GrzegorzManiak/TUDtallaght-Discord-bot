@@ -23,11 +23,6 @@ client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}, ${client.user.id}!`);
 });
 
-function getUserRolesFromMessage(message, roles = []) {
-    message.member.roles.cache.map(m => roles = [...roles, m.name]);
-    return roles;
-}
-
 // checks if the user has sufficient privileges to preform an action.
 function checkPermisions(requiredRoles, usersRoles, pass = false) {
     if (requiredRoles.length < 1) return true;
@@ -44,7 +39,7 @@ client.on('messageCreate', async(message) => {
     commandHandler(message);
 });
 
-async function commandHandler(message, roles = []) {
+async function commandHandler(message) {
     let charArray = message.content.split('');
 
     // If the message dosent begin with the command prefix, return.
@@ -57,11 +52,13 @@ async function commandHandler(message, roles = []) {
     let command = global.commands[splitMessage[0].substring(1).toLowerCase()];
 
     // check if the command acutaly exists
-    if (command === undefined) return;
+    if (command === undefined || command.canExecInDm === false) return;
 
     // grab the current user
-    let member;
+    let member,
+        roles = []
 
+    // check if the message is comming from a guild or a dm channel
     if (message.channel.type === 'GUILD_TEXT') member = message.guild.members.cache.get(message.author.id);
     else {
         let guild = client.guilds.cache.get('892820301224751175');
@@ -133,25 +130,26 @@ client.on('interactionCreate', async(interaction) => {
     }
 });
 
-async function buttonHandler(interaction, parameters, roles = []) {
+async function buttonHandler(interaction, parameters) {
     // Load the msg in if its not cached
     const message = !interaction.message.author ?
         await interaction.message.fetch() :
         interaction.message;
 
+    command = global.commands[parameters[1].toLowerCase()];
+
+    // check if the command exists
+    if (command === undefined) return;
+
     // grab the current user
-    let member;
+    let member,
+        roles = []
 
     if (message.channel.type === 'GUILD_TEXT') member = interaction.guild.members.cache.get(interaction.user.id);
     else {
         let guild = client.guilds.cache.get('892820301224751175');
         member = await guild.members.fetch(interaction.user.id);
     }
-
-    command = global.commands[parameters[1].toLowerCase()];
-
-    // check if the command exists
-    if (command === undefined) return;
 
     // get all the users roles and add them the the 'roles' array
     member.roles.cache.map(m => roles = [...roles, m.name.toLowerCase()]);
@@ -181,6 +179,7 @@ exports.addCommand = function addCommand(params = { commandName, description, ca
     if (params.roles === undefined) params.roles = [];
     if (params.reactionRoles === undefined) params.reactionRoles = [];
     if (params.buttonRoles === undefined) params.buttonRoles = [];
+    if (params.canExecInDm === undefined) params.canExecInDm = false;
 
     global.commands[params.commandName.toLowerCase()] = params;
 }
