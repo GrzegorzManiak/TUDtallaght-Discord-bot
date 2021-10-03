@@ -23,11 +23,6 @@ client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}, ${client.user.id}!`);
 });
 
-function getUserRolesFromMessage(message, roles = []) {
-    message.member.roles.cache.map(m => roles = [...roles, m.name]);
-    return roles;
-}
-
 // checks if the user has sufficient privileges to preform an action.
 function checkPermisions(requiredRoles, usersRoles, pass = false) {
     if (requiredRoles.length < 1) return true;
@@ -41,18 +36,10 @@ function checkPermisions(requiredRoles, usersRoles, pass = false) {
 
 // triggers everytime a message is sent.
 client.on('messageCreate', async(message) => {
-    switch (message.channel.type) {
-        case 'DM':
-            dmCommandHandler(message);
-            break;
-
-        case 'GUILD_TEXT':
-            guildTextCommandHandler(message);
-            break;
-    }
+    commandHandler(message);
 });
 
-function guildTextCommandHandler(message) {
+async function commandHandler(message) {
     let charArray = message.content.split('');
 
     // If the message dosent begin with the command prefix, return.
@@ -65,44 +52,24 @@ function guildTextCommandHandler(message) {
     let command = global.commands[splitMessage[0].substring(1).toLowerCase()];
 
     // check if the command acutaly exists
-    if (command === undefined) return;
-
-    let userRoles = getUserRolesFromMessage(message),
-        hasPremissions = checkPermisions(userRoles, command.roles);
-
-    if (hasPremissions === false) message.channel.send(`${message.member} You dont have the sufficient privileges to execute this command.`);
-    else command.callbackFunction(splitMessage, message, userRoles)
-}
-
-function dmCommandHandler(message, roles = []) {
-    let charArray = message.content.split('');
-
-    // If the message dosent begin with the command prefix, return.
-    if (charArray[0] !== global.prefix) return;
-
-    // Splits the message content up into words eg => a b c = ['a','b','c']
-    let splitMessage = message.content.split(' ');
-
-    // gives us the acutal command name by getting the first word and dropping the prefix character
-    let command = global.commands[splitMessage[0].substring(1).toLowerCase()];
-
-    // check if the command acutaly exists
-    if (command === undefined) return;
-
-    // grab the current guild
-    let guild = client.guilds.cache.get('892820301224751175');
+    if (command === undefined || command.canExecInDm === false) return;
 
     // grab the current user
-    guild.members.fetch(message.author.id).then(user => {
+    let member,
+        roles = []
 
-        // get all the users roles and add them the the 'roles' array
-        user.roles.cache.map(m => roles = [...roles, m.name.toLowerCase()]);
+    // check if the message is comming from a guild or a dm channel
+    if (message.channel.type === 'GUILD_TEXT') member = message.guild.members.cache.get(message.author.id);
+    else {
+        let guild = client.guilds.cache.get('892820301224751175');
+        member = await guild.members.fetch(message.author.id);
+    }
 
-        let hasPremissions = checkPermisions(roles, command.roles);
+    // get all the users roles and add them the the 'roles' array
+    member.roles.cache.map(m => roles = [...roles, m.name.toLowerCase()]);
 
-        if (hasPremissions === false) message.channel.send(`${message.member} You dont have the sufficient privileges to execute this command.`);
-        else command.dmCallbackFunction(splitMessage, message, roles)
-    });
+    if (checkPermisions(roles, command.roles) === false) message.channel.send(`${message.member} You dont have the sufficient privileges to execute this command.`);
+    else command.callbackFunction(splitMessage, message, roles)
 }
 
 //triggers everytime a reaction is added to a msg sent from the bot
@@ -163,18 +130,26 @@ client.on('interactionCreate', async(interaction) => {
     }
 });
 
-async function buttonHandler(interaction, parameters, roles = []) {
+async function buttonHandler(interaction, parameters) {
     // Load the msg in if its not cached
     const message = !interaction.message.author ?
         await interaction.message.fetch() :
         interaction.message;
 
-    // grab the current user
-    let member = interaction.guild.members.cache.get(interaction.user.id),
-        command = global.commands[parameters[1].toLowerCase()];
+    command = global.commands[parameters[1].toLowerCase()];
 
     // check if the command exists
     if (command === undefined) return;
+
+    // grab the current user
+    let member,
+        roles = []
+
+    if (message.channel.type === 'GUILD_TEXT') member = interaction.guild.members.cache.get(interaction.user.id);
+    else {
+        let guild = client.guilds.cache.get('892820301224751175');
+        member = await guild.members.fetch(interaction.user.id);
+    }
 
     // get all the users roles and add them the the 'roles' array
     member.roles.cache.map(m => roles = [...roles, m.name.toLowerCase()]);
@@ -204,6 +179,7 @@ exports.addCommand = function addCommand(params = { commandName, description, ca
     if (params.roles === undefined) params.roles = [];
     if (params.reactionRoles === undefined) params.reactionRoles = [];
     if (params.buttonRoles === undefined) params.buttonRoles = [];
+    if (params.canExecInDm === undefined) params.canExecInDm = false;
 
     global.commands[params.commandName.toLowerCase()] = params;
 }
@@ -212,5 +188,5 @@ exports.addCommand = function addCommand(params = { commandName, description, ca
 global.createTimedDelete = async function createTimedDelete(message, time) {
     setTimeout(() => {
         message.delete().catch(() => {});
-    }, time * 6000);
+    }, time * 60000);
 }

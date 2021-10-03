@@ -31,7 +31,7 @@ const adminEmbedTemplate = {
 };
 
 exports.command = {
-    commandName: 'help',
+    commandName: 'Help',
     callbackFunction: function(parameters, message, roles) {
         //clone the embed templates so that we dont edit it directly
         let adminEmbed = Object.assign({}, adminEmbedTemplate);
@@ -93,7 +93,11 @@ exports.command = {
         message.channel.send({ embeds: [helpEmbed], fetchReply: true }).then(returnedMsg => {
 
             // remove the msg that called the command.
-            message.delete();
+            if (message.channel.type === 'GUILD_TEXT') {
+                // delete the msg in 5 min unlesss its the dm's
+                global.createTimedDelete(returnedMsg, 5);
+                message.delete();
+            }
 
             // add an close reaction to the embed, only if admin page is disabled.
             if (adminHelp === false) returnedMsg.edit({ components: [sendCloseBtn(returnedMsg.id)] })
@@ -103,10 +107,10 @@ exports.command = {
                 adminEmbed.footer.text = `Made by Grzegorz M | [help,0,${returnedMsg.id}]`;
 
                 // Send out the embed with admin commands
-                message.channel.send({ embeds: [adminEmbed], fetchReply: true }).then(returnedMsg => {
+                message.channel.send({ embeds: [adminEmbed], components: [sendCloseBtn(returnedMsg.id)], fetchReply: true }).then(returnedMsg => {
 
-                    // add an close reaction to the embed
-                    returnedMsg.edit({ components: [sendCloseBtn(returnedMsg.id)] })
+                    // delete the msg in 5 min unlesss its the dm's
+                    if (message.channel.type === 'GUILD_TEXT') global.createTimedDelete(returnedMsg, 5);
                 });
             }
 
@@ -115,6 +119,7 @@ exports.command = {
 
     buttonClickCallback: function(message, interaction, parameters, roles) {
         if (parameters[2] !== 'close') return;
+
         message.embeds.forEach(embed => {
             // grab the command refrence at the footer of every embed
             // check if the message has a child
@@ -123,11 +128,12 @@ exports.command = {
 
             // delete its children
             message.channel.messages.fetch(childRefrence)
-                .then(message => message.delete());
+                .then(message => message.delete()).catch(err => {});
         });
 
         message.delete();
     },
+    canExecInDm: true,
     description: 'A command that displays all available commands.',
     roles: [
         'user'

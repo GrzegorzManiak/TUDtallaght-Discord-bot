@@ -56,7 +56,7 @@ async function getLinkAndSend(interaction, id = '') {
 }
 
 exports.command = {
-    commandName: 'spawnAuthMsg',
+    commandName: 'SpawnAuthMsg',
     callbackFunction: function(parameters, message, roles, allRoles = []) {
         //Return and throw an error if the cahannel Id provied is incorect
         let channel = global.client.channels.cache.get(parameters[1]);
