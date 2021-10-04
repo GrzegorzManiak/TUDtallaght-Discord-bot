@@ -90,8 +90,10 @@ exports.command = {
     },
     helpEmbedPage: -1,
     description: 'This command spawns the auth msg for users to link their accs.',
-    roles: global.adminRoles,
-    buttonRoles: global.userRoles,
+    roles: {
+        user: global.adminRoles,
+        buttonRoles: global.userRoles
+    },
     useSlashCommands: true,
     slashParams: [
         ['number', 'channel', 'The id of the cannel you want the message to be sent to', true],

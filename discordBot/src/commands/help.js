@@ -1,3 +1,5 @@
+const bot = require('../index.js')
+
 // Embed for any command with a helpEmbedPage: 0 or none.
 const helpEmbedTemplate = {
     color: 0x0099ff,
@@ -43,6 +45,8 @@ const sendCloseBtn = function(guild, id) {
 exports.command = {
     commandName: 'Help',
     callbackFunction: function(parameters, message, roles, slashCommand) {
+        let config = bot.getConfig();
+
         //clone the embed templates so that we dont edit it directly
         let adminEmbed = Object.assign({}, adminEmbedTemplate);
         let helpEmbed = Object.assign({}, helpEmbedTemplate);
@@ -51,10 +55,10 @@ exports.command = {
         let counters = { helpEmbed: 0, adminEmbed: 0 },
             adminHelp = false;
 
-        Object.keys(global.commands).forEach(command => {
+        Object.keys(config.commands).forEach(command => {
             let pass = false,
-                commandObj = global.commands[command],
-                commandObjRoles = [...commandObj.roles, ...global.adminRoles]
+                commandObj = config.commands[command],
+                commandObjRoles = [...commandObj.roles.user ?? [], ...config.roles.admin]
 
             // for each role that the user has
             roles.forEach(role => {
@@ -80,7 +84,7 @@ exports.command = {
 
             // add command name and description to the embed.
             currentEmbed.fields = [...currentEmbed.fields, {
-                name: `${global.prefix}${commandObj.commandName}`, // Give the help entry a name
+                name: `${config.prefix}${commandObj.commandName}`, // Give the help entry a name
                 value: commandObj.description, // Give the help entry a description
                 inline: function() {
                     if (count % 3 === 0) return false; // every seccond item move onto a new line.
@@ -103,7 +107,7 @@ exports.command = {
                     // remove the msg that called the command.
                     if (message.channel.type === 'GUILD_TEXT') {
                         // delete the msg in 5 min unlesss its the dm's
-                        global.createTimedDelete(returnedMsg, 5);
+                        bot.createTimedDelete(returnedMsg, 5);
                         message.delete();
                     }
         
@@ -118,10 +122,9 @@ exports.command = {
                         message.channel.send({ embeds: [adminEmbed], components: [sendCloseBtn(message.guildId, returnedMsg.id)], fetchReply: true }).then(returnedMsg => {
         
                             // delete the msg in 5 min unlesss its the dm's
-                            if (message.channel.type === 'GUILD_TEXT') global.createTimedDelete(returnedMsg, 5);
+                            if (message.channel.type === 'GUILD_TEXT') bot.createTimedDelete(returnedMsg, 5);
                         });
                     }
-        
                 });
                 break;
         }
@@ -147,6 +150,8 @@ exports.command = {
     canExecInDm: true,
     useSlashCommands: true,
     description: 'A command that displays all available commands.',
-    roles: global.userRoles,
-    buttonRoles: global.userRoles
+    roles: {
+        user: global.userRoles,
+        buttonRoles: global.userRoles
+    },
 }

@@ -1,12 +1,12 @@
-function returnClasses(message, specificDay, edit = false) {
+function returnClasses(message, specificDay, edit = false, slashCommand) {
     // Im tring to avoid long path chains with process.cwd()
     let timetableHelper = require(process.cwd() + '/helpers/timetable.js'),
         userDataHelper = require(process.cwd() + '/helpers/userData.js'),
-        userDetails = userDataHelper.getUserData(message.author.id),
+        userDetails = userDataHelper.getUserData(message?.author?.id || message?.user?.id),
         timetable = timetableHelper[userDetails.classgroup];
 
     // delete the msg that called the command if its in a server, not a dm.
-    if (message.channel.type === 'GUILD_TEXT') message.delete();
+    if (message.channel.type === 'GUILD_TEXT' && slashCommand === false) message.delete();
 
     if (specificDay === undefined) specificDay = new Date().getDay();
     let selectedDay = timetableHelper.getDay(timetable, specificDay),
@@ -99,7 +99,7 @@ function returnClasses(message, specificDay, edit = false) {
     }];
 
     // send a new message if no prior one exists
-    if (edit === false) message.author.send({
+    if (edit === false) message?.author ?? message?.user.send({
         embeds: mainEmbed,
         fetchReply: true,
         components: [sendButtons()],
@@ -112,12 +112,17 @@ function returnClasses(message, specificDay, edit = false) {
         components: [sendButtons()],
     });
 
+    if(slashCommand === true) message.reply({ 
+        content:`<@${message.user.id}> We have sent you and interactable message to your dm's!`,
+        ephemeral: true
+    })
+
 }
 
 exports.command = {
     commandName: 'Today',
-    callbackFunction: function(parameters, message, roles) {
-        returnClasses(message);
+    callbackFunction: function(parameters, message, roles, slashCommand) {
+        returnClasses(message, undefined, false, slashCommand);
     },
     buttonClickCallback: function(message, interaction, parameters, roles) {
         switch (parameters[2]) {
@@ -139,6 +144,8 @@ exports.command = {
     canExecInDm: true, // make it so the bot listens for this command in the dm's
     useSlashCommands: true,
     description: 'This command provides you with your next classes for the day.',
-    roles: global.userRoles,
-    buttonRoles: global.userRoles
+    roles: {
+        user: global.userRoles,
+        buttonRoles: global.userRoles
+    },
 }

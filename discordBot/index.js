@@ -21,3 +21,9 @@ bot.addCommand(require(commandDirectory + 'today.js').command);
 
 //--// gets the next class and the room  //--//
 bot.addCommand(require(commandDirectory + 'next.js').command);
+
+bot.setConfig({
+    token: global.discord,
+    serverid: global.serverid
+});
+bot.startBot();
