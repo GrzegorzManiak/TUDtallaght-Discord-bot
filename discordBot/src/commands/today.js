@@ -1,102 +1,80 @@
-function returnClasses(message, specificDay, edit = false, interaction) {
+function returnClasses(message, specificDay, edit = false) {
     // Im tring to avoid long path chains with process.cwd()
     let timetableHelper = require(process.cwd() + '/helpers/timetable.js'),
         userDataHelper = require(process.cwd() + '/helpers/userData.js'),
         userDetails = userDataHelper.getUserData(message.author.id),
-        timetable = timetableHelper[userDetails.classgroup],
-        day = '';
+        timetable = timetableHelper[userDetails.classgroup];
 
     // delete the msg that called the command if its in a server, not a dm.
     if (message.channel.type === 'GUILD_TEXT') message.delete();
 
-    let classes = function() {
-        if (specificDay === undefined) specificDay = new Date().getDay();
-        switch (specificDay) {
-            case 1: //monday
-                day = 'monday';
-                return timetable.monday;
-
-            case 2: //tuesday
-                day = 'tuesday';
-                return timetable.tuesday;
-
-            case 3: //wednesday
-                day = 'wednesday';
-                return timetable.wednesday;
-
-            case 4: //thursday
-                day = 'thursday';
-                return timetable.thursday;
-
-            case 5: //friday
-                day = 'friday';
-                return timetable.friday;
-
-            case 6: //saturday
-                day = 'saturday';
-                return undefined;
-
-            case 7: //saturday
-                day = 'sunday';
-                return undefined;
-        };
-    };
-
-    let title,
+    if (specificDay === undefined) specificDay = new Date().getDay();
+    let selectedDay = timetableHelper.getDay(timetable, specificDay),
+        title,
         embedArray = [],
         dayCompiled = '';
 
-    if (classes() === undefined) {
-        title = `You do not have any classes on this day, ${userDetails.name[0].charAt(0).toUpperCase() + userDetails.name[0].slice(1)}.`
+    // Check if the day hsa any classes
+    if (selectedDay[0] === undefined) {
+        // set the title of the main embed
+        title = `You do not have any classes on ${selectedDay[1]}, ${userDetails.name[0].charAt(0).toUpperCase() + userDetails.name[0].slice(1)}.`
+
+        // add content to the embed array stateing that there's no classes for the selectedDay
         embedArray = [{
             name: `Just sit back and enjoy the day`,
             value: 'If you belive that this is a mistake, and you do indeed have classes today, please contact Gregor.',
             inline: false,
         }];
     } else {
-        classes().forEach(classDetials => {
+        // set the title of the main embed
+        title = `Your classes for ${selectedDay[1]}, ${userDetails.name[0].charAt(0).toUpperCase() + userDetails.name[0].slice(1)}.`
+
+        // iterate tru each class in that day, format them and add them to an array
+        selectedDay[0].forEach(classDetials => {
             dayCompiled += `> **[${classDetials.startTime} - ${classDetials.endTime}]**  ${classDetials.className}, ${function(){
             let constructor = '';
             if(classDetials?.lab === true) constructor += ' Lab ';
                 return constructor += classDetials.class;
-        }()} \n`;
+            }()} \n`;
         });
 
+        // add the now formated classes into the embed array.
         embedArray = [...embedArray, {
-            name: `\n${day.charAt(0).toUpperCase() + day.slice(1)}`,
+            name: `\n${selectedDay[1].charAt(0).toUpperCase() + selectedDay[1].slice(1)}`,
             value: dayCompiled,
             inline: false,
         }];
-
-        title = `Your classes for ${day}, ${userDetails.name[0].charAt(0).toUpperCase() + userDetails.name[0].slice(1)}.`
     }
 
+    // returns the numerical value for the day before, eg input 5 (friday) returns 4 (thursday)
     let yesterday = function() {
-        let temp = specificDay - 1;
-        if (temp < 1) return 7;
-        else return temp;
+        if (specificDay - 1 < 0) return 6;
+        else return specificDay - 1;
     };
 
+    // returns the numerical value for the day after, eg input 5 (friday) returns 6 (saturday)
     let tommorow = function() {
-        let temp = specificDay + 1;
-        if (temp > 7) return 1;
-        else return temp;
+        if (specificDay + 1 > 6) return 0;
+        else return specificDay + 1;
     }
 
     let sendButtons = function() {
         return new global.discordjs.MessageActionRow()
+            // add a close button to the embed
             .addComponents(
                 new global.discordjs.MessageButton()
                 .setCustomId(`button,today,close`)
                 .setLabel("Close")
                 .setStyle('DANGER')
             )
+            // add a 'day before' button to the embed which edits the original message with the classes for the prior day
             .addComponents(
                 new global.discordjs.MessageButton()
                 .setCustomId(`button,today,daybefore,${yesterday()}`)
                 .setLabel("Day before")
                 .setStyle('PRIMARY')
             )
+            // add a 'day after' button to the embed which edits the original message with the classes for the following day
             .addComponents(
                 new global.discordjs.MessageButton()
                 .setCustomId(`button,today,dayafter,${tommorow()}`)
@@ -120,19 +98,20 @@ function returnClasses(message, specificDay, edit = false, interaction) {
         },
     }];
 
-    if (edit === false) {
-        message.author.send({
-            embeds: mainEmbed,
-            fetchReply: true,
-            components: [sendButtons()],
-        });
-    } else {
-        interaction.reply({
-            embeds: mainEmbed,
-            fetchReply: true,
-            components: [sendButtons()],
-        });
-    }
+    // send a new message if no prior one exists
+    if (edit === false) message.author.send({
+        embeds: mainEmbed,
+        fetchReply: true,
+        components: [sendButtons()],
+    });
+
+    // edit the message if any of the buttons are pressed
+    else message.edit({
+        embeds: mainEmbed,
+        fetchReply: true,
+        components: [sendButtons()],
+    });
+
 }
 
 exports.command = {
@@ -147,23 +126,19 @@ exports.command = {
                 return;
 
             case 'daybefore':
-                message.delete();
-                returnClasses(message, parseInt(parameters[3]), true, interaction);
+                returnClasses(message, parseInt(parameters[3]), true);
+                interaction.deferUpdate();
                 return;
 
             case 'dayafter':
-                message.delete();
-                returnClasses(message, parseInt(parameters[3]), true, interaction);
+                returnClasses(message, parseInt(parameters[3]), true);
+                interaction.deferUpdate();
                 return;
         }
     },
-    canExecInDm: true,
+    canExecInDm: true, // make it so the bot listens for this command in the dm's
+    useSlashCommands: true,
     description: 'This command provides you with your next classes for the day.',
-    roles: [
-        'user',
-        'test'
-    ],
-    buttonRoles: [
-        'user'
-    ]
+    roles: global.userRoles,
+    buttonRoles: global.userRoles
 }

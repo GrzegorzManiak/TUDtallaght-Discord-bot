@@ -1,10 +1,5 @@
 exports.b1 = {
-    monday: [{
-            className: 'Disc. Maths',
-            startTime: '09:00',
-            endTime: '11:00',
-            class: 'Online'
-        },
+    monday: [
         {
             className: 'Disc. Maths',
             startTime: '09:00',
@@ -294,3 +289,37 @@ exports.b2 = {
         }
     ]
 }
+
+exports.getDay = function getDay(timetable, day, arr = []) {
+    switch (day) {
+        case 0: //sunday
+            arr = [undefined, 'sunday'];
+            break;
+
+        case 1: //monday
+            arr = [timetable.monday, 'monday'];
+            break;
+
+        case 2: //tuesday
+            arr = [timetable.tuesday, 'tuesday'];
+            break;
+
+        case 3: //wednesday
+            arr = [timetable.wednesday, 'wednesday'];
+            break;
+
+        case 4: //thursday
+            arr = [timetable.thursday, 'thursday'];
+            break;
+
+        case 5: //friday
+            arr = [timetable.friday, 'friday'];
+            break;
+
+        case 6: //saturday
+            arr = [undefined, 'saturday'];
+            break;
+    };
+
+    return arr;
+};

@@ -57,18 +57,22 @@ async function getLinkAndSend(interaction, id = '') {
 
 exports.command = {
     commandName: 'SpawnAuthMsg',
-    callbackFunction: function(parameters, message, roles, allRoles = []) {
+    callbackFunction: function(parameters, message, roles, slashCommand, allRoles = []) {
         //Return and throw an error if the cahannel Id provied is incorect
         let channel = global.client.channels.cache.get(parameters[1]);
         let guild = global.client.guilds.resolve(message.guildId);
 
-        if (channel === undefined)
-            return message.channel.send('Invalid parameter, could not locate the channel.'); //Inform the user that the command failed
+        if (channel === undefined){
+            if(slashCommand === true) return message.reply('Invalid parameter, could not locate the channel.'); //Inform the user that the command failed
+            else return message.channel.send('Invalid parameter, could not locate the channel.'); 
+        }
 
         //Return and throw an error if the provided role is incorect
         guild.roles.cache.map(m => allRoles = [...allRoles, m.name]);
-        if (parameters[2] === undefined || allRoles.includes(parameters[2]) === false)
-            return message.channel.send('Invalid parameter, could not locate role.'); //Inform the user that the command failed
+        if (parameters[2] === undefined || allRoles.includes(parameters[2]) === false){
+            if(slashCommand === true) return message.reply('Invalid parameter, could not locate role.'); //Inform the user that the command failed
+            else return message.channel.send('Invalid parameter, could not locate role.');
+        }
 
         //Send out the embed
         channel.send({
@@ -76,7 +80,8 @@ exports.command = {
             components: [email(message.guildId)],
             fetchReply: true
         }).then(returnedMsg => {
-            message.delete();
+            if(slashCommand === true) message.reply({ content:'Authentication msg spawned in successfully', fetchReply:true }).then(msg =>{msg.delete();});
+            else message.delete();
         });
     },
 
@@ -85,10 +90,11 @@ exports.command = {
     },
     helpEmbedPage: -1,
     description: 'This command spawns the auth msg for users to link their accs.',
-    roles: [
-        'test'
-    ],
-    buttonRoles: [
-        'user'
+    roles: global.adminRoles,
+    buttonRoles: global.userRoles,
+    useSlashCommands: true,
+    slashParams: [
+        ['number', 'channel', 'The id of the cannel you want the message to be sent to', true],
+        ['string', 'role', 'The name of the role you want to give upon verification', true]
     ]
 }

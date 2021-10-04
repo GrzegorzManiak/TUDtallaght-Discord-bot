@@ -51,9 +51,7 @@ exports.command = {
         })*/
     },
     canExecInDm: true,
+    useSlashCommands: true,
     description: 'This command provides you with your next class.',
-    roles: [
-        'user',
-        'test'
-    ],
+    roles: global.userRoles,
 }

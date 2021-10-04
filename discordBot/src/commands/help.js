@@ -30,9 +30,19 @@ const adminEmbedTemplate = {
     },
 };
 
+const sendCloseBtn = function(guild, id) {
+    return new global.discordjs.MessageActionRow()
+        .addComponents(
+            new global.discordjs.MessageButton()
+            .setCustomId(`button,help,close,${guild},${id}`)
+            .setLabel("Close")
+            .setStyle('DANGER')
+        );
+}
+
 exports.command = {
     commandName: 'Help',
-    callbackFunction: function(parameters, message, roles) {
+    callbackFunction: function(parameters, message, roles, slashCommand) {
         //clone the embed templates so that we dont edit it directly
         let adminEmbed = Object.assign({}, adminEmbedTemplate);
         let helpEmbed = Object.assign({}, helpEmbedTemplate);
@@ -43,14 +53,15 @@ exports.command = {
 
         Object.keys(global.commands).forEach(command => {
             let pass = false,
-                commandObj = global.commands[command];
+                commandObj = global.commands[command],
+                commandObjRoles = [...commandObj.roles, ...global.adminRoles]
 
             // for each role that the user has
             roles.forEach(role => {
                 // check if the command in qustion requires any special roles, if not, let the user continue
-                if (commandObj.roles !== undefined) {
+                if (commandObjRoles !== undefined) {
                     // checks if the user has sufficient privileges to view the command.
-                    if (commandObj.roles.includes(role)) pass = true;
+                    if (commandObjRoles.includes(role)) pass = true;
                 } else pass = true
             });
 
@@ -79,42 +90,41 @@ exports.command = {
 
         });
 
-        let sendCloseBtn = function(id) {
-            return new global.discordjs.MessageActionRow()
-                .addComponents(
-                    new global.discordjs.MessageButton()
-                    .setCustomId(`button,help,close,${message.guildId},${id}`)
-                    .setLabel("Close")
-                    .setStyle('DANGER')
-                );
-        }
-
-        // Send out the embed
-        message.channel.send({ embeds: [helpEmbed], fetchReply: true }).then(returnedMsg => {
-
-            // remove the msg that called the command.
-            if (message.channel.type === 'GUILD_TEXT') {
-                // delete the msg in 5 min unlesss its the dm's
-                global.createTimedDelete(returnedMsg, 5);
-                message.delete();
-            }
-
-            // add an close reaction to the embed, only if admin page is disabled.
-            if (adminHelp === false) returnedMsg.edit({ components: [sendCloseBtn(returnedMsg.id)] })
-            else if (adminHelp === true) {
-
-                // Add a refrence to the above panel.
-                adminEmbed.footer.text = `Made by Grzegorz M | [help,0,${returnedMsg.id}]`;
-
-                // Send out the embed with admin commands
-                message.channel.send({ embeds: [adminEmbed], components: [sendCloseBtn(returnedMsg.id)], fetchReply: true }).then(returnedMsg => {
-
-                    // delete the msg in 5 min unlesss its the dm's
-                    if (message.channel.type === 'GUILD_TEXT') global.createTimedDelete(returnedMsg, 5);
+        switch(slashCommand){
+            case true:
+                // Send out the embed
+                message.reply({ embeds: [helpEmbed], ephemeral: true }).then(() => {
+                   if(adminHelp === true) message.followUp({ embeds: [adminEmbed], ephemeral: true });
                 });
-            }
+                break;
 
-        });
+            case false:
+                message.channel.send({ embeds: [helpEmbed], fetchReply: true }).then(returnedMsg => {
+                    // remove the msg that called the command.
+                    if (message.channel.type === 'GUILD_TEXT') {
+                        // delete the msg in 5 min unlesss its the dm's
+                        global.createTimedDelete(returnedMsg, 5);
+                        message.delete();
+                    }
+        
+                    // add an close reaction to the embed, only if admin page is disabled.
+                    if (adminHelp === false) returnedMsg.edit({ components: [sendCloseBtn(message.guildId, returnedMsg.id)] })
+                    else if (adminHelp === true) {
+        
+                        // Add a refrence to the above panel.
+                        adminEmbed.footer.text = `Made by Grzegorz M | [help,0,${returnedMsg.id}]`;
+        
+                        // Send out the embed with admin commands
+                        message.channel.send({ embeds: [adminEmbed], components: [sendCloseBtn(message.guildId, returnedMsg.id)], fetchReply: true }).then(returnedMsg => {
+        
+                            // delete the msg in 5 min unlesss its the dm's
+                            if (message.channel.type === 'GUILD_TEXT') global.createTimedDelete(returnedMsg, 5);
+                        });
+                    }
+        
+                });
+                break;
+        }
     },
 
     buttonClickCallback: function(message, interaction, parameters, roles) {
@@ -133,12 +143,10 @@ exports.command = {
 
         message.delete();
     },
+
     canExecInDm: true,
+    useSlashCommands: true,
     description: 'A command that displays all available commands.',
-    roles: [
-        'user'
-    ],
-    buttonRoles: [
-        'user'
-    ]
+    roles: global.userRoles,
+    buttonRoles: global.userRoles
 }

@@ -64,12 +64,8 @@ exports.command = {
         }
     },
     canExecInDm: true,
+    useSlashCommands: true,
     description: 'This command provides you with your timetable.',
-    roles: [
-        'user',
-        'test'
-    ],
-    buttonRoles: [
-        'user'
-    ]
+    roles: global.userRoles,
+    buttonRoles: global.userRoles
 }
