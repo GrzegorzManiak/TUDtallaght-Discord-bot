@@ -1,5 +1,5 @@
 const discordJS = require('discord.js');
-const SlashCommandBuilder = require('@discordjs/builders').SlashCommandBuilder;
+const slashCommandBuilder = require('@discordjs/builders').SlashCommandBuilder;
 const client = new discordJS.Client({
     intents: [
         discordJS.Intents.FLAGS.GUILDS, //Give the bot access to its connected guilds, should only be one tho.
@@ -10,11 +10,9 @@ const client = new discordJS.Client({
     partials: ['MESSAGE', 'CHANNEL', 'REACTION']
 });
 
-//these are temporary, I add them when I need them.
 exports.client = client;
-global.discordjs = discordJS;
-global.useSlashCommands = true;
-global.slashCmdBuilder = SlashCommandBuilder;
+exports.discordjs = discordJS;
+exports.slashCmdBuilder = slashCommandBuilder;
 
 let config = {
     roles: {
@@ -38,6 +36,7 @@ exports.getConfig = ()=>{
     return config;
 }
 
+// this function starts the bot
 exports.startBot = () => {
     // Authenticate the bot
     client.login(config.token);
@@ -45,7 +44,7 @@ exports.startBot = () => {
     // confirm that the bot authenticated
     client.on('ready', () => {
         console.log(`Logged in as ${client.user.tag}, ${client.user.id}!`);
-        if(global.useSlashCommands === true) addSlashCommands();
+        if(config.useSlashCommands === true) addSlashCommands();
     });
 }
 
@@ -113,7 +112,7 @@ function addSlashCommands() {
     Object.keys(config.commands).forEach(command => {
         if(config.commands[command]?.useSlashCommands !== true) return;
 
-        let data = new SlashCommandBuilder()
+        let data = new slashCommandBuilder()
 	        .setName(command)
 	        .setDescription(config.commands[command].description);
 
@@ -141,7 +140,7 @@ function addSlashCommands() {
 }
 
 // delte in X ammount of minutes. helps with congestion in chat by deleteing old msgs.
-exports.createTimedDelete = (message, time) => {
+exports.createTimedDelete = async(message, time) => {
     setTimeout(() => {
         message.delete().catch(() => {});
     }, time * 60000);

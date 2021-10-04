@@ -1,3 +1,6 @@
+const bot = require('../index.js')
+let config = bot.getConfig();
+
 exports.command = {
     commandName: 'Next',
     callbackFunction: function(parameters, message, roles) {
@@ -53,5 +56,8 @@ exports.command = {
     canExecInDm: true,
     useSlashCommands: true,
     description: 'This command provides you with your next class.',
-    roles: global.userRoles,
+    roles: {
+        user: global.userRoles,
+        buttonRoles: global.userRoles
+    },
 }

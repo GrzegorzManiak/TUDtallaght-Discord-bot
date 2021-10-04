@@ -1,7 +1,10 @@
+const bot = require('../index.js')
+let config = bot.getConfig();
+
 let sendCloseBtn = function(guild, id) {
-    return new global.discordjs.MessageActionRow()
+    return new bot.discordjs.MessageActionRow()
         .addComponents(
-            new global.discordjs.MessageButton()
+            new bot.discordjs.MessageButton()
             .setCustomId(`button,timetable,close,${guild},${id}`)
             .setLabel("Close")
             .setStyle('DANGER')
@@ -10,7 +13,7 @@ let sendCloseBtn = function(guild, id) {
 
 exports.command = {
     commandName: 'TimeTable',
-    callbackFunction: function(parameters, message, roles, slashCommand) {
+    callbackFunction: function(parameters, message, roles, slashCommand = false) {
         // Im tring to avoid long path chains with process.cwd()
         let timetableHelper = require(process.cwd() + '/helpers/timetable.js'),
             userDataHelper = require(process.cwd() + '/helpers/userData.js'),
@@ -22,13 +25,13 @@ exports.command = {
         if (message.channel.type === 'GUILD_TEXT' && slashCommand === false) message.delete();
 
         Object.keys(timetable).forEach(day => {
-
             let dayCompiled = '';
             Object.keys(timetable[day]).forEach(classDetials => {
                 classDetials = timetable[day][classDetials];
                 dayCompiled += `> **[${classDetials.startTime} - ${classDetials.endTime}]**  ${classDetials.className}, ${function(){
             let constructor = '';
             if(classDetials?.lab === true) constructor += ' Lab ';
+            if(classDetials?.support === true) constructor += ' (Support) ';
             return constructor += classDetials.class;
         }()} \n`;
             })

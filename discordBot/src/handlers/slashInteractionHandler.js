@@ -2,6 +2,11 @@ const bot = require('../');
 let config = bot.getConfig();
 
 exports.slashInteractionHandler = async(interaction) =>{
+    if(config.useSlashCommands !== true) {
+        interaction.reply({content:'Slash commands are turned off.', ephemeral: true});
+        return;
+    }
+
     let roles = [],
         command = interaction?.commandName.toLowerCase();
 

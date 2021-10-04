@@ -11,8 +11,8 @@ exports.commandHandler = async(message) => {
     // gives us the acutal command name by getting the first word and dropping the prefix character
     let command = config.commands[splitMessage[0].substring(1).toLowerCase()];
 
-    // check if the command acutaly exists
-    if (command?.canExecInDm !== true) return;
+    // check if the command can be executed in the dms
+    if (command?.canExecInDm !== true && message.channel.type === 'DM') return;
 
     // grab the current user
     let member,

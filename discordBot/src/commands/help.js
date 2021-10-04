@@ -1,4 +1,5 @@
 const bot = require('../index.js')
+let config = bot.getConfig();
 
 // Embed for any command with a helpEmbedPage: 0 or none.
 const helpEmbedTemplate = {
@@ -33,9 +34,9 @@ const adminEmbedTemplate = {
 };
 
 const sendCloseBtn = function(guild, id) {
-    return new global.discordjs.MessageActionRow()
+    return new bot.discordjs.MessageActionRow()
         .addComponents(
-            new global.discordjs.MessageButton()
+            new bot.discordjs.MessageButton()
             .setCustomId(`button,help,close,${guild},${id}`)
             .setLabel("Close")
             .setStyle('DANGER')
@@ -45,8 +46,6 @@ const sendCloseBtn = function(guild, id) {
 exports.command = {
     commandName: 'Help',
     callbackFunction: function(parameters, message, roles, slashCommand) {
-        let config = bot.getConfig();
-
         //clone the embed templates so that we dont edit it directly
         let adminEmbed = Object.assign({}, adminEmbedTemplate);
         let helpEmbed = Object.assign({}, helpEmbedTemplate);

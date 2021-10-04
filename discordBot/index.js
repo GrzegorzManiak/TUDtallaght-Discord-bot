@@ -13,6 +13,9 @@ bot.addCommand(require(commandDirectory + 'help.js').command);
 //--// spawns a message to allow users to verify their emails //--//
 bot.addCommand(require(commandDirectory + 'spawnauthmsg.js').command);
 
+//--// spawns a msg where the user can select their class group //--//
+bot.addCommand(require(commandDirectory + 'spawnclassgroupmsg.js').command);
+
 //--// get users timetable //--//
 bot.addCommand(require(commandDirectory + 'timetable.js').command);
 
@@ -24,6 +27,7 @@ bot.addCommand(require(commandDirectory + 'next.js').command);
 
 bot.setConfig({
     token: global.discord,
-    serverid: global.serverid
+    serverid: global.serverid,
+    useSlashCommands: true,
 });
 bot.startBot();

@@ -1,3 +1,6 @@
+const bot = require('../index.js')
+let config = bot.getConfig();
+
 let helpEmbed = function(roleName) {
     return {
         color: 0x0099ff,
@@ -15,9 +18,9 @@ let helpEmbed = function(roleName) {
 };
 
 let email = function(guild) {
-    return new global.discordjs.MessageActionRow()
+    return new bot.discordjs.MessageActionRow()
         .addComponents(
-            new global.discordjs.MessageButton()
+            new bot.discordjs.MessageButton()
             .setCustomId(`button,spawnauthmsg,verify,${guild}`)
             .setLabel("Verify")
             .setStyle('PRIMARY')
@@ -25,9 +28,9 @@ let email = function(guild) {
 }
 
 let link = function(url) {
-    return new global.discordjs.MessageActionRow()
+    return new bot.discordjs.MessageActionRow()
         .addComponents(
-            new global.discordjs.MessageButton()
+            new bot.discordjs.MessageButton()
             .setLabel("Open verification page")
             .setStyle('LINK')
             .setURL(url)
@@ -59,19 +62,25 @@ exports.command = {
     commandName: 'SpawnAuthMsg',
     callbackFunction: function(parameters, message, roles, slashCommand, allRoles = []) {
         //Return and throw an error if the cahannel Id provied is incorect
-        let channel = global.client.channels.cache.get(parameters[1]);
-        let guild = global.client.guilds.resolve(message.guildId);
+        let channel = bot.client.channels.cache.get(parameters[1]);
+        let guild = bot.client.guilds.resolve(message.guildId);
 
         if (channel === undefined){
             if(slashCommand === true) return message.reply('Invalid parameter, could not locate the channel.'); //Inform the user that the command failed
-            else return message.channel.send('Invalid parameter, could not locate the channel.'); 
+            else return message.channel.send({
+                content:'Invalid parameter, could not locate the channel.',
+                fetchReply:true
+            }).then((msg) => bot.createTimedDelete(msg, 0.2)); 
         }
 
         //Return and throw an error if the provided role is incorect
         guild.roles.cache.map(m => allRoles = [...allRoles, m.name]);
         if (parameters[2] === undefined || allRoles.includes(parameters[2]) === false){
             if(slashCommand === true) return message.reply('Invalid parameter, could not locate role.'); //Inform the user that the command failed
-            else return message.channel.send('Invalid parameter, could not locate role.');
+            else return message.channel.send({
+                content: 'Invalid parameter, could not locate role.',
+                fetchReply:true
+            }).then((msg) => bot.createTimedDelete(msg, 0.2));
         }
 
         //Send out the embed
@@ -79,7 +88,7 @@ exports.command = {
             embeds: [helpEmbed(parameters[2])],
             components: [email(message.guildId)],
             fetchReply: true
-        }).then(returnedMsg => {
+        }).then(() => {
             if(slashCommand === true) message.reply({ content:'Authentication msg spawned in successfully', fetchReply:true }).then(msg =>{msg.delete();});
             else message.delete();
         });
@@ -95,6 +104,7 @@ exports.command = {
         buttonRoles: global.userRoles
     },
     useSlashCommands: true,
+    canExecInDm: false,
     slashParams: [
         ['number', 'channel', 'The id of the cannel you want the message to be sent to', true],
         ['string', 'role', 'The name of the role you want to give upon verification', true]

@@ -1,3 +1,6 @@
+const bot = require('../index.js')
+let config = bot.getConfig();
+
 function returnClasses(message, specificDay, edit = false, slashCommand) {
     // Im tring to avoid long path chains with process.cwd()
     let timetableHelper = require(process.cwd() + '/helpers/timetable.js'),
@@ -34,6 +37,7 @@ function returnClasses(message, specificDay, edit = false, slashCommand) {
             dayCompiled += `> **[${classDetials.startTime} - ${classDetials.endTime}]**  ${classDetials.className}, ${function(){
             let constructor = '';
             if(classDetials?.lab === true) constructor += ' Lab ';
+            if(classDetials?.support === true) constructor += ' (Support) ';
                 return constructor += classDetials.class;
             }()} \n`;
         });
@@ -59,24 +63,24 @@ function returnClasses(message, specificDay, edit = false, slashCommand) {
     }
 
     let sendButtons = function() {
-        return new global.discordjs.MessageActionRow()
+        return new bot.discordjs.MessageActionRow()
             // add a close button to the embed
             .addComponents(
-                new global.discordjs.MessageButton()
+                new bot.discordjs.MessageButton()
                 .setCustomId(`button,today,close`)
                 .setLabel("Close")
                 .setStyle('DANGER')
             )
             // add a 'day before' button to the embed which edits the original message with the classes for the prior day
             .addComponents(
-                new global.discordjs.MessageButton()
+                new bot.discordjs.MessageButton()
                 .setCustomId(`button,today,daybefore,${yesterday()}`)
                 .setLabel("Day before")
                 .setStyle('PRIMARY')
             )
             // add a 'day after' button to the embed which edits the original message with the classes for the following day
             .addComponents(
-                new global.discordjs.MessageButton()
+                new bot.discordjs.MessageButton()
                 .setCustomId(`button,today,dayafter,${tommorow()}`)
                 .setLabel("Day after")
                 .setStyle('PRIMARY')
@@ -98,25 +102,43 @@ function returnClasses(message, specificDay, edit = false, slashCommand) {
         },
     }];
 
+
     // send a new message if no prior one exists
-    if (edit === false) message?.author ?? message?.user.send({
-        embeds: mainEmbed,
-        fetchReply: true,
-        components: [sendButtons()],
-    });
+    if (edit === false) {
+        let user = message.author ?? message.user;
+        user.send({
+            embeds: mainEmbed,
+            fetchReply: true,
+            components: [sendButtons()],
+        });
 
+        switch(slashCommand){
+            case true:
+                message.reply({ 
+                    content:`<@${message.user.id}> We have sent you and interactable message to your dm's!`,
+                    ephemeral: true
+                });
+                break;
+    
+            case false:
+                if(message.channel.type !== 'GUILD_TEXT') break;
+                message.channel.send({
+                    content:`<@${message.author.id}> We have sent you and interactable message to your dm's!`,
+                    fetchReply: true
+                }).then((msg)=>{
+                    bot.createTimedDelete(msg, 0.2);
+                });
+                break;
+        }
+    }
     // edit the message if any of the buttons are pressed
-    else message.edit({
-        embeds: mainEmbed,
-        fetchReply: true,
-        components: [sendButtons()],
-    });
-
-    if(slashCommand === true) message.reply({ 
-        content:`<@${message.user.id}> We have sent you and interactable message to your dm's!`,
-        ephemeral: true
-    })
-
+    else { 
+        message.edit({
+            embeds: mainEmbed,
+            fetchReply: true,
+            components: [sendButtons()],
+        });
+    }
 }
 
 exports.command = {
