@@ -1,6 +1,5 @@
 exports.b1 = {
-    monday: [
-        {
+    monday: [{
             className: 'Disc. Maths',
             startTime: '09:00',
             endTime: '11:00',
@@ -86,7 +85,7 @@ exports.b1 = {
         {
             className: 'Business',
             startTime: '16:00',
-            endTime: '17:00',
+            endTime: '18:00',
             class: 'Online'
         }
     ],
