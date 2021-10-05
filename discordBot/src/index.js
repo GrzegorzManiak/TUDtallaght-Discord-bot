@@ -65,6 +65,9 @@ client.on('interactionCreate', async(interaction) => {
 
     else if (interaction?.commandName) 
         require('./handlers/slashInteractionHandler.js').slashInteractionHandler(interaction);
+
+    else if (interaction?.componentType === 'SELECT_MENU')
+        require('./handlers/menuInteractionHandler.js').menuInteractionHandler(interaction);
 });
 
 // checks if the user has sufficient privileges to preform an action.

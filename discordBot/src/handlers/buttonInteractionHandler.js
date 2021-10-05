@@ -22,7 +22,7 @@ exports.buttonInteractionHandler = async(interaction) => {
 
     if (message.channel.type === 'GUILD_TEXT') member = interaction.guild.members.cache.get(interaction.user.id);
     else {
-        let guild = bot.client.guilds.cache.get(global.serverid);
+        let guild = bot.client.guilds.cache.get(config.serverid);
         member = await guild.members.fetch(interaction.user.id);
         if(member === undefined) return;
     }
@@ -31,6 +31,6 @@ exports.buttonInteractionHandler = async(interaction) => {
     member.roles.cache.map(m => roles = [...roles, m.name.toLowerCase()]);
 
     // Check if the user containts the right premisions to react
-    if (bot.hasPermissions(roles, [...command.roles.buttonRoles, ...command.roles.user, ...config.roles.admin]) !== true) return;
+    if (bot.hasPermissions(roles, [...command.roles.button, ...command.roles.user, ...config.roles.admin]) !== true) return;
     return command.buttonClickCallback(message, interaction, parameters, roles);
 }

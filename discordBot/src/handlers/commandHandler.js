@@ -21,7 +21,7 @@ exports.commandHandler = async(message) => {
     // check if the message is comming from a guild or a dm channel
     if (message.channel.type === 'GUILD_TEXT') member = message.guild.members.cache.get(message.author.id);
     else {
-        let guild = bot.client.guilds.cache.get(global.serverid);
+        let guild = bot.client.guilds.cache.get(config.serverid);
         member = await guild.members.fetch(message.author.id);
     }
 

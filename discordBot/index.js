@@ -4,8 +4,12 @@ require('./token').initGlobals();
 const bot = require('./src');
 let commandDirectory = './src/commands/';
 
+global.logo = 'https://cdn.discordapp.com/avatars/892820433592803400/61cdf5225f23d50315ada918b4c4efc8.webp?size=80';
+global.github = 'https://github.com/KetamineKyle/TUDtallaght-Discord-bot';
+
 global.userRoles = [ 'user' ];
 global.adminRoles = [ 'test' ];
+global.classRoles = [ 'group 1a1', 'group 1a2', 'group 1b1', 'group 1b2' ];
 
 //--// help command //--//
 bot.addCommand(require(commandDirectory + 'help.js').command);
@@ -22,10 +26,8 @@ bot.addCommand(require(commandDirectory + 'timetable.js').command);
 //--// gets the classes for that day //--//
 bot.addCommand(require(commandDirectory + 'today.js').command);
 
-//--// gets the next class and the room  //--//
-bot.addCommand(require(commandDirectory + 'next.js').command);
-
 bot.setConfig({
+    serverid: '892714214383308800',
     token: global.discord,
     serverid: global.serverid,
     useSlashCommands: true,

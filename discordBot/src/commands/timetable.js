@@ -16,14 +16,38 @@ exports.command = {
     callbackFunction: function(parameters, message, roles, slashCommand = false) {
         // Im tring to avoid long path chains with process.cwd()
         let timetableHelper = require(process.cwd() + '/helpers/timetable.js'),
-            userDataHelper = require(process.cwd() + '/helpers/userData.js'),
-            userDetails = userDataHelper.getUserData(message?.author?.id || message?.user?.id),
-            timetable = timetableHelper[userDetails.classgroup],
-            embedArray = [];
+            classgroup = roles.find(role => { if(global.classRoles.includes(role)) return role;}),
+            userName = message.user ?? message.author,
+            embedArray = [],
+            timetable = [];
 
+        switch(classgroup){
+            case global.classRoles[0]: timetable = timetableHelper.a1; break;
+            case global.classRoles[1]: timetable = timetableHelper.a2; break;
+            case global.classRoles[2]: timetable = timetableHelper.b1; break;
+            case global.classRoles[3]: timetable = timetableHelper.b2; break;
+            default: classgroup = null;
+        }
+
+        if(classgroup === null){
+            switch(slashCommand){
+                case true:
+                    message.reply({
+                        content: `<@${userName.id}>, You are not registerd under any class groups.`,
+                        ephemeral: true
+                    });
+                    return;
+
+                case false:
+                    userName.send(`<@${userName.id}>, You are not registerd under any class groups.`)
+                    message.delete();
+                    return;
+            }
+        }
+        
         // delete the msg that called the command if its in a server, not a dm.
         if (message.channel.type === 'GUILD_TEXT' && slashCommand === false) message.delete();
-
+        
         Object.keys(timetable).forEach(day => {
             let dayCompiled = '';
             Object.keys(timetable[day]).forEach(classDetials => {
@@ -46,16 +70,16 @@ exports.command = {
         let msgContent = {
             embeds: [{
                 color: 0x0099ff,
-                title: `Here are all your classes for the week, ${userDetails.name[0].charAt(0).toUpperCase() + userDetails.name[0].slice(1)}.`,
-                url: 'https://github.com/KetamineKyle/TUDtallaght-Discord-bot',
+                title: `Here are all your classes for the week, ${userName.tag.charAt(0).toUpperCase() + userName.tag.slice(1)}.`,
+                url: global.github,
                 thumbnail: {
-                    url: 'https://cdn.discordapp.com/avatars/892820433592803400/61cdf5225f23d50315ada918b4c4efc8.webp?size=80',
+                    url: global.logo,
                 },
                 description: '',
                 fields: [embedArray],
                 footer: {
-                    text: `Made by Grzegorz M | [timetable,${userDetails.classgroup}]`,
-                    icon_url: 'https://cdn.discordapp.com/avatars/892820433592803400/61cdf5225f23d50315ada918b4c4efc8.webp?size=80',
+                    text: `Made by Grzegorz M | [timetable,${classgroup}]`,
+                    icon_url: global.logo,
                 },
             }],
             components: [sendCloseBtn(message.guildId, message.id)]
@@ -83,6 +107,6 @@ exports.command = {
     description: 'This command provides you with your timetable.',
     roles: {
         user: global.userRoles,
-        buttonRoles: global.userRoles
+        button: global.userRoles
     },
 }

@@ -1,4 +1,4 @@
-exports.getUserData = function getUserData(userID) {
+exports.getUserData = function getUserData(userid) {
     // cuRRENTLY not hooked up to a database, returns what info the database would have stored on the user
     return {
         id: 460756817006428162,

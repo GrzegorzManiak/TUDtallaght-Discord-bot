@@ -1,12 +1,36 @@
 const bot = require('../index.js')
 let config = bot.getConfig();
 
-function returnClasses(message, specificDay, edit = false, slashCommand) {
+function returnClasses(message, specificDay, edit = false, slashCommand, roles) {
     // Im tring to avoid long path chains with process.cwd()
     let timetableHelper = require(process.cwd() + '/helpers/timetable.js'),
-        userDataHelper = require(process.cwd() + '/helpers/userData.js'),
-        userDetails = userDataHelper.getUserData(message?.author?.id || message?.user?.id),
-        timetable = timetableHelper[userDetails.classgroup];
+        classgroup = roles.find(role => { if(global.classRoles.includes(role)) return role;}),
+        userName = message.user ?? message.author,
+        timetable = [];
+
+    switch(classgroup){
+        case global.classRoles[0]: timetable = timetableHelper.a1; break;
+        case global.classRoles[1]: timetable = timetableHelper.a2; break;
+        case global.classRoles[2]: timetable = timetableHelper.b1; break;
+        case global.classRoles[3]: timetable = timetableHelper.b2; break;
+        default: classgroup = null;
+    }
+
+    if(classgroup === null){
+        switch(slashCommand){
+            case true:
+                message.reply({
+                    content: `<@${userName.id}>, You are not registerd under any class groups.`,
+                    ephemeral: true
+                });
+                return;
+
+            case false:
+                userName.send(`<@${userName.id}>, You are not registerd under any class groups.`)
+                message.delete();
+                return;
+        }
+    }
 
     // delete the msg that called the command if its in a server, not a dm.
     if (message.channel.type === 'GUILD_TEXT' && slashCommand === false) message.delete();
@@ -20,7 +44,7 @@ function returnClasses(message, specificDay, edit = false, slashCommand) {
     // Check if the day hsa any classes
     if (selectedDay[0] === undefined) {
         // set the title of the main embed
-        title = `You do not have any classes on ${selectedDay[1]}, ${userDetails.name[0].charAt(0).toUpperCase() + userDetails.name[0].slice(1)}.`
+        title = `You do not have any classes on ${selectedDay[1]}, ${userName.tag.charAt(0).toUpperCase() + userName.tag.slice(1)}.`
 
         // add content to the embed array stateing that there's no classes for the selectedDay
         embedArray = [{
@@ -30,7 +54,7 @@ function returnClasses(message, specificDay, edit = false, slashCommand) {
         }];
     } else {
         // set the title of the main embed
-        title = `Your classes for ${selectedDay[1]}, ${userDetails.name[0].charAt(0).toUpperCase() + userDetails.name[0].slice(1)}.`
+        title = `Your classes for ${selectedDay[1]}, ${userName.tag.charAt(0).toUpperCase() + userName.tag.slice(1)}.`
 
         // iterate tru each class in that day, format them and add them to an array
         selectedDay[0].forEach(classDetials => {
@@ -90,15 +114,15 @@ function returnClasses(message, specificDay, edit = false, slashCommand) {
     let mainEmbed = [{
         color: 0x0099ff,
         title,
-        url: 'https://github.com/KetamineKyle/TUDtallaght-Discord-bot',
+        url: global.github,
         thumbnail: {
-            url: 'https://cdn.discordapp.com/avatars/892820433592803400/61cdf5225f23d50315ada918b4c4efc8.webp?size=80',
+            url: global.logo,
         },
         description: '',
         fields: [embedArray],
         footer: {
-            text: `Made by Grzegorz M | [today,${userDetails.classgroup}]`,
-            icon_url: 'https://cdn.discordapp.com/avatars/892820433592803400/61cdf5225f23d50315ada918b4c4efc8.webp?size=80',
+            text: `Made by Grzegorz M | [today,${classgroup}]`,
+            icon_url: global.logo,
         },
     }];
 
@@ -144,7 +168,7 @@ function returnClasses(message, specificDay, edit = false, slashCommand) {
 exports.command = {
     commandName: 'Today',
     callbackFunction: function(parameters, message, roles, slashCommand) {
-        returnClasses(message, undefined, false, slashCommand);
+        returnClasses(message, undefined, false, slashCommand, roles);
     },
     buttonClickCallback: function(message, interaction, parameters, roles) {
         switch (parameters[2]) {
@@ -153,12 +177,14 @@ exports.command = {
                 return;
 
             case 'daybefore':
-                returnClasses(message, parseInt(parameters[3]), true);
+                message.user = interaction.user;
+                returnClasses(message, parseInt(parameters[3]), true, false, roles);
                 interaction.deferUpdate();
                 return;
 
             case 'dayafter':
-                returnClasses(message, parseInt(parameters[3]), true);
+                message.user = interaction.user;
+                returnClasses(message, parseInt(parameters[3]), true, false, roles);
                 interaction.deferUpdate();
                 return;
         }
@@ -168,6 +194,6 @@ exports.command = {
     description: 'This command provides you with your next classes for the day.',
     roles: {
         user: global.userRoles,
-        buttonRoles: global.userRoles
+        button: global.userRoles
     },
 }

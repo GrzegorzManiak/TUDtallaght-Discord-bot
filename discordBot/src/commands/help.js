@@ -5,10 +5,10 @@ let config = bot.getConfig();
 const helpEmbedTemplate = {
     color: 0x0099ff,
     title: 'Here are all the available commands!',
-    url: 'https://github.com/KetamineKyle/TUDtallaght-Discord-bot',
+    url: global.github,
     description: 'To get more info about a command, just type **help** than the command inquestion after it!',
     thumbnail: {
-        url: 'https://cdn.discordapp.com/avatars/892820433592803400/61cdf5225f23d50315ada918b4c4efc8.webp?size=80',
+        url: global.logo,
     },
     fields: [{
         name: '\u200b',
@@ -17,7 +17,7 @@ const helpEmbedTemplate = {
     }],
     footer: {
         text: 'Made by Grzegorz M | [help,0]',
-        icon_url: 'https://cdn.discordapp.com/avatars/892820433592803400/61cdf5225f23d50315ada918b4c4efc8.webp?size=80',
+        icon_url: global.logo,
     },
 };
 
@@ -25,11 +25,11 @@ const helpEmbedTemplate = {
 const adminEmbedTemplate = {
     color: 0x0099ff,
     title: 'Here are all the available admin commands!',
-    url: 'https://github.com/KetamineKyle/TUDtallaght-Discord-bot',
+    url: global.github,
     fields: [],
     footer: {
         text: 'Made by Grzegorz M | ',
-        icon_url: 'https://cdn.discordapp.com/avatars/892820433592803400/61cdf5225f23d50315ada918b4c4efc8.webp?size=80',
+        icon_url: global.logo,
     },
 };
 
@@ -49,6 +49,10 @@ exports.command = {
         //clone the embed templates so that we dont edit it directly
         let adminEmbed = Object.assign({}, adminEmbedTemplate);
         let helpEmbed = Object.assign({}, helpEmbedTemplate);
+        let prefix = function(){
+            if(config.allowslashcommands === true) return '/';
+            else return config.prefix;
+        }
 
         // loop tru every command available.
         let counters = { helpEmbed: 0, adminEmbed: 0 },
@@ -83,7 +87,7 @@ exports.command = {
 
             // add command name and description to the embed.
             currentEmbed.fields = [...currentEmbed.fields, {
-                name: `${config.prefix}${commandObj.commandName}`, // Give the help entry a name
+                name: `${prefix()}${commandObj.commandName}`, // Give the help entry a name
                 value: commandObj.description, // Give the help entry a description
                 inline: function() {
                     if (count % 3 === 0) return false; // every seccond item move onto a new line.
@@ -151,6 +155,6 @@ exports.command = {
     description: 'A command that displays all available commands.',
     roles: {
         user: global.userRoles,
-        buttonRoles: global.userRoles
+        button: global.userRoles
     },
 }

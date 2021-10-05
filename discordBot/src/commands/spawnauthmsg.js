@@ -66,7 +66,10 @@ exports.command = {
         let guild = bot.client.guilds.resolve(message.guildId);
 
         if (channel === undefined){
-            if(slashCommand === true) return message.reply('Invalid parameter, could not locate the channel.'); //Inform the user that the command failed
+            if(slashCommand === true) return message.reply({ 
+                content:'Invalid parameter, could not locate the channel.',
+                ephemeral: true
+            }); //Inform the user that the command failed
             else return message.channel.send({
                 content:'Invalid parameter, could not locate the channel.',
                 fetchReply:true
@@ -76,7 +79,10 @@ exports.command = {
         //Return and throw an error if the provided role is incorect
         guild.roles.cache.map(m => allRoles = [...allRoles, m.name]);
         if (parameters[2] === undefined || allRoles.includes(parameters[2]) === false){
-            if(slashCommand === true) return message.reply('Invalid parameter, could not locate role.'); //Inform the user that the command failed
+            if(slashCommand === true) return message.reply({ 
+                content:'Invalid parameter, could not locate role.',
+                ephemeral: true
+            }); //Inform the user that the command failed
             else return message.channel.send({
                 content: 'Invalid parameter, could not locate role.',
                 fetchReply:true
@@ -101,7 +107,7 @@ exports.command = {
     description: 'This command spawns the auth msg for users to link their accs.',
     roles: {
         user: global.adminRoles,
-        buttonRoles: global.userRoles
+        button: global.userRoles
     },
     useSlashCommands: true,
     canExecInDm: false,
