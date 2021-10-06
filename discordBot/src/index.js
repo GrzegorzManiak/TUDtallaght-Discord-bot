@@ -53,11 +53,12 @@ client.on('messageCreate', async(message) => {
     require('./handlers/commandHandler').commandHandler(message);
 });
 
+/*
 //triggers everytime a reaction is added to a msg sent from the bot
 client.on('messageReactionAdd', async(reaction, user) => {
     require('./handlers/reactionHandler').reactionHandler(reaction, user, false);
 });
-
+*/
 // triggers everytime a interaction is created.
 client.on('interactionCreate', async(interaction) => {
     if (interaction?.componentType === 'BUTTON') 
@@ -121,7 +122,6 @@ function addSlashCommands() {
 
         if(config.commands[command]?.slashParams){
             config.commands[command].slashParams.forEach(param => {
-
                 function setParams(option){
                     return option.setName(param[1]).setDescription(param[2]).setRequired(param[3] || false);
                 }

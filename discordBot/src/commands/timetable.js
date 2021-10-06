@@ -31,33 +31,32 @@ exports.command = {
 
         if(classgroup === null){
             switch(slashCommand){
-                case true:
+                case true: // If the user sends out a slash command, reply with an ephemeral msg
                     message.reply({
                         content: `<@${userName.id}>, You are not registerd under any class groups.`,
                         ephemeral: true
                     });
                     return;
 
-                case false:
+                case false: // Otherwise, reply to them in the DM's and remove the spawning command.
                     userName.send(`<@${userName.id}>, You are not registerd under any class groups.`)
-                    message.delete();
+                    message.delete().catch(()=>{});;
                     return;
             }
         }
         
         // delete the msg that called the command if its in a server, not a dm.
-        if (message.channel.type === 'GUILD_TEXT' && slashCommand === false) message.delete();
+        if (message.channel.type === 'GUILD_TEXT' && slashCommand === false) message.delete().catch(()=>{});;
         
         Object.keys(timetable).forEach(day => {
             let dayCompiled = '';
             Object.keys(timetable[day]).forEach(classDetials => {
                 classDetials = timetable[day][classDetials];
-                dayCompiled += `> **[${classDetials.startTime} - ${classDetials.endTime}]**  ${classDetials.className}, ${function(){
-            let constructor = '';
-            if(classDetials?.lab === true) constructor += ' Lab ';
-            if(classDetials?.support === true) constructor += ' (Support) ';
-            return constructor += classDetials.class;
-        }()} \n`;
+                dayCompiled += `> **[${classDetials.startTime} - ${classDetials.endTime}]**  ${classDetials.className}, ${function(constructor = ''){
+                    if(classDetials?.lab === true) constructor += ' Lab ';
+                    if(classDetials?.support === true) constructor += ' (Support) ';
+                    return constructor += classDetials.class;
+                }()} \n`;
             })
 
             embedArray = [...embedArray, {
@@ -98,9 +97,8 @@ exports.command = {
         }
     },
     buttonClickCallback: function(message, interaction, parameters, roles) {
-        if (parameters[2] === 'close') {
-            message.delete();
-        }
+        // If the close button is clicked, delete the msg
+        if (parameters[2] === 'close') message.delete().catch(()=>{});
     },
     canExecInDm: true,
     useSlashCommands: true,

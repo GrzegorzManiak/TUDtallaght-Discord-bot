@@ -27,13 +27,13 @@ function returnClasses(message, specificDay, edit = false, slashCommand, roles) 
 
             case false:
                 userName.send(`<@${userName.id}>, You are not registerd under any class groups.`)
-                message.delete();
+                message.delete().catch(()=>{});;
                 return;
         }
     }
 
     // delete the msg that called the command if its in a server, not a dm.
-    if (message.channel.type === 'GUILD_TEXT' && slashCommand === false) message.delete();
+    if (message.channel.type === 'GUILD_TEXT' && slashCommand === false) message.delete().catch(()=>{});;
 
     if (specificDay === undefined) specificDay = new Date().getDay();
     let selectedDay = timetableHelper.getDay(timetable, specificDay),
@@ -173,7 +173,7 @@ exports.command = {
     buttonClickCallback: function(message, interaction, parameters, roles) {
         switch (parameters[2]) {
             case 'close':
-                message.delete();
+                message.delete().catch(()=>{});;
                 return;
 
             case 'daybefore':

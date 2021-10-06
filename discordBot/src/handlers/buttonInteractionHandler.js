@@ -11,7 +11,7 @@ exports.buttonInteractionHandler = async(interaction) => {
         await interaction.message.fetch() :
         interaction.message;
 
-    command = config.commands[parameters[1].toLowerCase()];
+    command = config?.commands[parameters[1].toLowerCase()];
 
     // check if the command exists
     if (command === undefined) return;

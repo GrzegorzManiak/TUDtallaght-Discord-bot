@@ -21,7 +21,7 @@ exports.reactionHandler = async(reaction, user, removeReaction, roles = []) => {
 
     // get all the users roles and add them the the 'roles' array
     member.roles.cache.map(m => roles = [...roles, m.name.toLowerCase()]);
-
+    console.log(roles)
     if (message.embeds !== undefined) message.embeds.forEach(embed => {
         // grab the command refrence at the footer of every embed
         let commandRefrence = /\[(.+)\]/gm.exec(embed.footer.text)[1].split(','),
