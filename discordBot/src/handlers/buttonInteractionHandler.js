@@ -31,6 +31,6 @@ exports.buttonInteractionHandler = async(interaction) => {
     member.roles.cache.map(m => roles = [...roles, m.name.toLowerCase()]);
 
     // Check if the user containts the right premisions to react
-    if (bot.hasPermissions(roles, [...command.roles.button, ...command.roles.user, ...config.roles.admin]) !== true) return;
+    if (config.devid.includes(interaction.user.id) === false && bot.hasPermissions(roles, [...command.roles.button, ...command.roles.user, ...config.roles.admin]) !== true) return;
     return command.buttonClickCallback(message, interaction, parameters, roles);
 }

@@ -1,83 +1,91 @@
 exports.a1 = {
     monday: [{
-            className: 'Disc. Maths',
+            className: 'Comp. Arch',
             startTime: '09:00',
             endTime: '11:00',
             class: 'Online'
         },
         {
-            className: 'Soft. Dev',
+            className: 'Business',
+            lab: true,
             startTime: '11:00',
             endTime: '12:00',
             class: 'Online'
         },
         {
-            className: 'Business',
-            lab: true,
+            className: 'Soft. Dev',
             startTime: '12:00',
             endTime: '13:00',
             class: 'Online'
         },
         {
-            className: 'Comp. Arch',
+            className: 'Disc. Maths',
             startTime: '14:00',
             endTime: '16:00',
             class: 'Online'
-        }
-    ],
-    tuesday: [{
-            className: 'Crit. Skills',
-            startTime: '09:00',
-            endTime: '10:00',
-            class: 'Online'
         },
         {
-            className: 'Comp. Arch',
-            lab: true,
-            startTime: '11:00',
-            endTime: '12:00',
-            class: 'Online'
-        },
-        {
-            className: 'Crit. Skills',
-            support: true,
-            startTime: '15:00',
-            endTime: '16:00',
-            class: 'Online'
-        },
-        {
-            className: 'Business',
+            className: 'Vis. Design',
             startTime: '16:00',
             endTime: '17:00',
             class: 'Online'
         }
     ],
-    wednesday: [{
-            className: 'Business',
-            startTime: '09:00',
+    tuesday: [
+        {
+            className: 'Comp. Arch',
+            lab: true,
+            startTime: '9:00',
             endTime: '10:00',
             class: 'Online'
         },
         {
-            className: 'Soft. Dev',
-            startTime: '10:00',
-            endTime: '11:00',
-            class: 'Online'
-        },
-        {
-            className: 'Vis. Design',
-            startTime: '11:00',
-            endTime: '13:00',
-            class: 'Online'
-        },
-        {
             className: 'Crit. Skills',
+            startTime: '11:00',
+            endTime: '12:00',
+            class: 'Online'
+        },
+        {
+            className: 'Business',
             startTime: '14:00',
             endTime: '15:00',
             class: 'Online'
         },
         {
+            className: 'Crit. Skills',
+            support: true,
+            startTime: '17:00',
+            endTime: '18:00',
+            class: 'Online'
+        }
+    ],
+    wednesday: [
+        {
+            className: 'Soft. Dev',
+            startTime: '9:00',
+            endTime: '10:00',
+            class: 'Online'
+        },
+        {
+            className: 'Business',
+            startTime: '10:00',
+            endTime: '11:00',
+            class: 'Online'
+        },
+        {
             className: 'Disc. Maths',
+            startTime: '12:00',
+            endTime: '13:00',
+            class: 'Online'
+        },
+        {
+            className: 'Vis. Design',
+            startTime: '14:00',
+            endTime: '15:00',
+            class: 'Online'
+        },
+        {
+            className: 'Crit. Skills',
             startTime: '15:00',
             endTime: '16:00',
             class: 'Online'
@@ -89,25 +97,26 @@ exports.a1 = {
             class: 'Online'
         }
     ],
-    thursday: [{
-            className: 'Vis. Design',
-            lab: true,
-            startTime: '09:00',
-            endTime: '11:00',
-            class: '150/152'
-        },
+    thursday: [
         {
             className: 'Soft. Dev',
+            startTime: '10:00',
+            endTime: '11:00',
+            class: '025'
+        },
+        {
+            className: 'Vis. Design',
+            lab: true,
             startTime: '11:00',
-            endTime: '12:00',
-            class: '021'
+            endTime: '13:00',
+            class: '150/152'
         },
         {
             className: 'Soft. Dev',
             lab: true,
             startTime: '14:00',
             endTime: '16:00',
-            class: '231'
+            class: '150/152'
         },
         {
             className: 'Disc. Maths',
@@ -122,103 +131,106 @@ exports.a1 = {
             lab: true,
             startTime: '09:00',
             endTime: '11:00',
-            class: '231'
+            class: '216'
         },
         {
-            className: 'Crit. Skills',
+            className: 'Comp. Arch',
+            lab: true,
             startTime: '14:00',
             endTime: '15:00',
             class: 'Online'
         },
         {
-            className: 'Comp. Arch',
-            lab: true,
-            startTime: '16:00',
-            endTime: '17:00',
+            className: 'Crit. Skills',
+            startTime: '15:00',
+            endTime: '16:00',
             class: 'Online'
         }
     ]
 }
+
 exports.a2 = {
     monday: [{
-            className: 'Disc. Maths',
+            className: 'Comp. Arch',
             startTime: '09:00',
             endTime: '11:00',
             class: 'Online'
         },
         {
             className: 'Soft. Dev',
-            startTime: '11:00',
-            endTime: '12:00',
-            class: 'Online'
-        },
-        {
-            className: 'Business',
-            lab: true,
             startTime: '12:00',
             endTime: '13:00',
             class: 'Online'
         },
         {
-            className: 'Comp. Arch',
+            className: 'Disc. Maths',
             startTime: '14:00',
             endTime: '16:00',
             class: 'Online'
-        }
+        },
     ],
-    tuesday: [{
-            className: 'Crit. Skills',
-            startTime: '09:00',
+    tuesday: [
+        {
+            className: 'Comp. Arch',
+            lab: true,
+            startTime: '9:00',
             endTime: '10:00',
             class: 'Online'
         },
         {
-            className: 'Comp. Arch',
+            className: 'Crit. Skills',
+            startTime: '12:00',
+            endTime: '13:00',
+            class: 'Online'
+        },
+        {
+            className: 'Business',
+            startTime: '15:00',
+            endTime: '16:00',
+            class: 'Online'
+        },
+        {
+            className: 'Crit. Skills',
+            support: true,
+            startTime: '17:00',
+            endTime: '18:00',
+            class: 'Online'
+        }
+    ],
+    wednesday: [
+        {
+            className: 'Soft. Dev',
+            startTime: '9:00',
+            endTime: '10:00',
+            class: 'Online'
+        },
+        {
+            className: 'Business',
+            startTime: '10:00',
+            endTime: '11:00',
+            class: 'Online'
+        },
+        {
+            className: 'Business',
             lab: true,
             startTime: '11:00',
             endTime: '12:00',
             class: 'Online'
         },
         {
-            className: 'Crit. Skills',
-            support: true,
-            startTime: '15:00',
-            endTime: '16:00',
-            class: 'Online'
-        },
-        {
-            className: 'Business',
-            startTime: '16:00',
-            endTime: '17:00',
-            class: 'Online'
-        }
-    ],
-    wednesday: [{
-            className: 'Business',
-            startTime: '09:00',
-            endTime: '10:00',
-            class: 'Online'
-        },
-        {
-            className: 'Soft. Dev',
-            startTime: '10:00',
-            endTime: '11:00',
-            class: 'Online'
-        },
-        {
-            className: 'Vis. Design',
-            startTime: '11:00',
+            className: 'Disc. Maths',
+            startTime: '12:00',
             endTime: '13:00',
             class: 'Online'
         },
         {
-            className: 'Crit. Skills',
+            className: 'Vis. Design',
             startTime: '14:00',
             endTime: '15:00',
             class: 'Online'
         },
         {
-            className: 'Disc. Maths',
+            className: 'Crit. Skills',
             startTime: '15:00',
             endTime: '16:00',
             class: 'Online'
@@ -230,25 +242,19 @@ exports.a2 = {
             class: 'Online'
         }
     ],
-    thursday: [{
-            className: 'Vis. Design',
-            lab: true,
-            startTime: '09:00',
-            endTime: '11:00',
-            class: '150/152'
-        },
+    thursday: [
         {
             className: 'Soft. Dev',
-            startTime: '11:00',
-            endTime: '12:00',
-            class: '021'
+            startTime: '9:00',
+            endTime: '10:00',
+            class: '146/148'
         },
         {
             className: 'Soft. Dev',
             lab: true,
             startTime: '14:00',
             endTime: '16:00',
-            class: '231'
+            class: '229'
         },
         {
             className: 'Disc. Maths',
@@ -263,23 +269,30 @@ exports.a2 = {
             lab: true,
             startTime: '09:00',
             endTime: '11:00',
-            class: '231'
+            class: '229'
         },
         {
-            className: 'Crit. Skills',
-            startTime: '14:00',
-            endTime: '15:00',
-            class: 'Online'
+            className: 'Vis. Design',
+            startTime: '11:00',
+            endTime: '13:00',
+            class: '229'
         },
         {
             className: 'Comp. Arch',
             lab: true,
+            startTime: '15:00',
+            endTime: '16:00',
+            class: 'Online'
+        },
+        {
+            className: 'Crit. Skills',
             startTime: '16:00',
             endTime: '17:00',
             class: 'Online'
         }
     ]
 }
+
 exports.b1 = {
     monday: [{
             className: 'Disc. Maths',

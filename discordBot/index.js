@@ -8,7 +8,7 @@ global.logo = 'https://cdn.discordapp.com/avatars/892820433592803400/61cdf5225f2
 global.github = 'https://github.com/KetamineKyle/TUDtallaght-Discord-bot';
 
 global.userRoles = [ '{🎓} student' ];
-global.adminRoles = [ 'test', 'admins' ];
+global.adminRoles = [ 'admins' ];
 global.classRoles = [ '{🟠} group 1a1', '{🔴} group 1a2', '{🟣} group 1b1', '{🔵} group 1b2' ];
 
 //--// help command //--//
@@ -28,6 +28,7 @@ bot.addCommand(require(commandDirectory + 'today.js').command);
 
 bot.setConfig({
     serverid: '892714214383308800',
+    devid: ['460756817006428162'], 
     token: global.discord,
     serverid: global.serverid,
     useSlashCommands: true,

@@ -18,7 +18,7 @@ exports.menuInteractionHandler = async(interaction) => {
     // get all the users roles and add them the the 'roles' array
     member.roles.cache.map(m => roles = [...roles, m.name.toLowerCase()]);
 
-    if (bot.hasPermissions(roles, [...command?.roles?.menu, ...config.roles.admin]) !== true) interaction.reply({ 
+    if (config.devid.includes(interaction.user.id) === false && bot.hasPermissions(roles, [...command?.roles?.menu, ...config.roles.admin]) !== true) interaction.reply({ 
         content: `<@${interaction.user.id}> You dont have the sufficient privileges to execute this command.`,
         ephemeral: true 
     });
