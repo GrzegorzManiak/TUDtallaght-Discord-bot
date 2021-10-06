@@ -29,8 +29,7 @@ bot.addCommand(require(commandDirectory + 'today.js').command);
 bot.setConfig({
     serverid: '892714214383308800',
     devid: ['460756817006428162'], 
-    token: global.discord,
-    serverid: global.serverid,
+    token: process.env.token,
     useSlashCommands: true,
 });
 bot.startBot();
