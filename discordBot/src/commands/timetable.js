@@ -93,6 +93,14 @@ exports.command = {
 
             case false:
                 message.author.send(msgContent);
+                if(message.channel.type !== 'GUILD_TEXT') break;
+
+                message.channel.send({
+                    content:`<@${message.author.id}> We have sent your timetable to your dm's!`,
+                    fetchReply: true
+                }).then((msg)=>{
+                    bot.createTimedDelete(msg, 0.2);
+                });
                 return;
         }
     },

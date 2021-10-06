@@ -110,7 +110,7 @@ exports.command = {
                     // remove the msg that called the command.
                     if (message.channel.type === 'GUILD_TEXT') {
                         // delete the msg in 5 min unlesss its the dm's
-                        bot.createTimedDelete(returnedMsg, 5);
+                        bot.createTimedDelete(returnedMsg, 2);
                         message.delete();
                     }
         
@@ -125,7 +125,7 @@ exports.command = {
                         message.channel.send({ embeds: [adminEmbed], components: [sendCloseBtn(message.guildId, returnedMsg.id)], fetchReply: true }).then(returnedMsg => {
         
                             // delete the msg in 5 min unlesss its the dm's
-                            if (message.channel.type === 'GUILD_TEXT') bot.createTimedDelete(returnedMsg, 5);
+                            if (message.channel.type === 'GUILD_TEXT') bot.createTimedDelete(returnedMsg, 2);
                         });
                     }
                 });
