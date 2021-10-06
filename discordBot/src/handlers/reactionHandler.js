@@ -21,7 +21,6 @@ exports.reactionHandler = async(reaction, user, removeReaction, roles = []) => {
 
     // get all the users roles and add them the the 'roles' array
     member.roles.cache.map(m => roles = [...roles, m.name.toLowerCase()]);
-    console.log(roles)
     if (message.embeds !== undefined) message.embeds.forEach(embed => {
         // grab the command refrence at the footer of every embed
         let commandRefrence = /\[(.+)\]/gm.exec(embed.footer.text)[1].split(','),
@@ -29,7 +28,7 @@ exports.reactionHandler = async(reaction, user, removeReaction, roles = []) => {
             reactionEmojie = reaction._emoji.name;
 
         // Check if the user containts the right premisions to react
-        if (checkPermisions(roles, [...command.reactionRoles, ...command.roles, ...global.adminRoles]) !== true) return;
+        if (config.devid.includes(interaction.user.id) === false && checkPermisions(roles, [...command.reactionRoles, ...command.roles, ...global.adminRoles]) !== true) return;
         switch (removeReaction) {
             case false: // User added a reaction
                 return command.reactionAddCallback(reactionEmojie, message, reaction, roles)

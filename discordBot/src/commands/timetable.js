@@ -12,7 +12,7 @@ let sendCloseBtn = function(guild, id) {
 }
 
 exports.command = {
-    commandName: 'TimeTable',
+    commandName: 'Timetable',
     callbackFunction: function(parameters, message, roles, slashCommand = false) {
         // Im tring to avoid long path chains with process.cwd()
         let timetableHelper = require(process.cwd() + '/helpers/timetable.js'),
