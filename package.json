@@ -39,10 +39,5 @@
         "sync-fetch": "^0.3.0",
         "vhost": "^3.0.0",
         "windows-iana": "^5.0.2"
-    },
-    "devDependencies": {
-        "nodemon": "^2.0.13",
-        "tailwindcss": "^2.2.9",
-        "win-node-env": "^0.4.0"
     }
 }
