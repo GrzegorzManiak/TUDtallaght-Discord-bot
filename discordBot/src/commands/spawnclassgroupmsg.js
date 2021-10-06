@@ -104,6 +104,7 @@ exports.command = {
                     content:`<@${interaction.user.id}>, Failed to update your role!`,
                     ephemeral: true
                 });
+                if(err.httpStatus === 403) interaction.followUp('403 Missing Permissions, Please place the bot role above all other roles.');
             });
         });
     },

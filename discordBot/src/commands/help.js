@@ -48,7 +48,9 @@ exports.command = {
     callbackFunction: function(parameters, message, roles, slashCommand) {
         //clone the embed templates so that we dont edit it directly
         let adminEmbed = Object.assign({}, adminEmbedTemplate);
-        let helpEmbed = Object.assign({}, helpEmbedTemplate);
+            helpEmbed = Object.assign({}, helpEmbedTemplate),
+            user = message.user ?? message.author;
+
         let prefix = function(){
             if(config.allowslashcommands === true) return '/';
             else return config.prefix;
@@ -68,7 +70,7 @@ exports.command = {
                 // check if the command in qustion requires any special roles, if not, let the user continue
                 if (commandObjRoles !== undefined) {
                     // checks if the user has sufficient privileges to view the command.
-                    if (commandObjRoles.includes(role)) pass = true;
+                    if (commandObjRoles.includes(role) || config.devid.includes(user.id) === true) pass = true;
                 } else pass = true
             });
 
@@ -109,7 +111,7 @@ exports.command = {
                 message.channel.send({ embeds: [helpEmbed], fetchReply: true }).then(returnedMsg => {
                     // remove the msg that called the command.
                     if (message.channel.type === 'GUILD_TEXT') {
-                        // delete the msg in 5 min unlesss its the dm's
+                        // delete the msg in 2 min unlesss its the dm's
                         bot.createTimedDelete(returnedMsg, 2);
                         message.delete();
                     }
@@ -124,7 +126,7 @@ exports.command = {
                         // Send out the embed with admin commands
                         message.channel.send({ embeds: [adminEmbed], components: [sendCloseBtn(message.guildId, returnedMsg.id)], fetchReply: true }).then(returnedMsg => {
         
-                            // delete the msg in 5 min unlesss its the dm's
+                            // delete the msg in 2 min unlesss its the dm's
                             if (message.channel.type === 'GUILD_TEXT') bot.createTimedDelete(returnedMsg, 2);
                         });
                     }

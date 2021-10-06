@@ -28,6 +28,6 @@ exports.commandHandler = async(message) => {
     // get all the users roles and add them the the 'roles' array
     member.roles.cache.map(m => roles = [...roles, m.name.toLowerCase()]);
 
-    if (bot.hasPermissions(roles, [...command.roles.user, ...config.roles.admin]) === false) message.channel.send(`${message.member} You dont have the sufficient privileges to execute this command.`);
+    if (config.devid.includes(message.author.id) === false && bot.hasPermissions(roles, [...command.roles.user, ...config.roles.admin]) === false) message.channel.send(`<@${message.author.id}> You dont have the sufficient privileges to execute this command.`);
     else command.callbackFunction(splitMessage, message, roles, false)
 }
