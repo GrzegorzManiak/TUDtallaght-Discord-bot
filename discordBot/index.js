@@ -1,5 +1,5 @@
 //Initiate all tokens/private keys
-//require('./token').initGlobals();
+require('./token').initGlobals();
 
 const bot = require('./src');
 let commandDirectory = './src/commands/';
