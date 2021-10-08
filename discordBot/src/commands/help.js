@@ -44,12 +44,18 @@ const sendCloseBtn = function(guild, id) {
 }
 
 exports.command = {
-    commandName: 'Help',
-    callbackFunction: function(parameters, message, roles, slashCommand) {
+    details:{
+        commandName: 'Help',
+        commandShortDescription: 'A command that displays all available commands.',
+    },
+    commandCallback: function(parameters, interaction, obj){ 
+        //retro fitting commands so they work.
+        let slashCommand = function(){ if(interaction?.commandName !== undefined) return true; else return false; }
+        
         //clone the embed templates so that we dont edit it directly
         let adminEmbed = Object.assign({}, adminEmbedTemplate);
             helpEmbed = Object.assign({}, helpEmbedTemplate),
-            user = message.user ?? message.author;
+            user = interaction.user ?? interaction.author;
 
         let prefix = function(){
             if(config.allowslashcommands === true) return '/';
@@ -66,7 +72,7 @@ exports.command = {
                 commandObjRoles = [...commandObj.roles.user ?? [], ...config.roles.admin]
 
             // for each role that the user has
-            roles.forEach(role => {
+            obj.roles.forEach(role => {
                 // check if the command in qustion requires any special roles, if not, let the user continue
                 if (commandObjRoles !== undefined) {
                     // checks if the user has sufficient privileges to view the command.
@@ -89,8 +95,8 @@ exports.command = {
 
             // add command name and description to the embed.
             currentEmbed.fields = [...currentEmbed.fields, {
-                name: `${prefix()}${commandObj.commandName}`, // Give the help entry a name
-                value: commandObj.description, // Give the help entry a description
+                name: `${prefix()}${commandObj.details.commandName}`, // Give the help entry a name
+                value: commandObj.details.commandShortDescription, // Give the help entry a description
                 inline: function() {
                     if (count % 3 === 0) return false; // every seccond item move onto a new line.
                     else return true;
@@ -99,35 +105,35 @@ exports.command = {
 
         });
 
-        switch(slashCommand){
+        switch(slashCommand()){
             case true:
                 // Send out the embed
-                message.reply({ embeds: [helpEmbed], ephemeral: true }).then(() => {
-                   if(adminHelp === true) message.followUp({ embeds: [adminEmbed], ephemeral: true });
+                interaction.reply({ embeds: [helpEmbed], ephemeral: true }).then(() => {
+                   if(adminHelp === true) interaction.followUp({ embeds: [adminEmbed], ephemeral: true });
                 });
                 break;
 
             case false:
-                message.channel.send({ embeds: [helpEmbed], fetchReply: true }).then(returnedMsg => {
+                interaction.channel.send({ embeds: [helpEmbed], fetchReply: true }).then(returnedMsg => {
                     // remove the msg that called the command.
-                    if (message.channel.type === 'GUILD_TEXT') {
+                    if (interaction.channel.type === 'GUILD_TEXT') {
                         // delete the msg in 2 min unlesss its the dm's
                         bot.createTimedDelete(returnedMsg, 2);
-                        message.delete();
+                        interaction.delete();
                     }
         
                     // add an close reaction to the embed, only if admin page is disabled.
-                    if (adminHelp === false) returnedMsg.edit({ components: [sendCloseBtn(message.guildId, returnedMsg.id)] })
+                    if (adminHelp === false) returnedMsg.edit({ components: [sendCloseBtn(interaction.guildId, returnedMsg.id)] })
                     else if (adminHelp === true) {
         
                         // Add a refrence to the above panel.
                         adminEmbed.footer.text = `Made by Grzegorz M | [help,0,${returnedMsg.id}]`;
         
                         // Send out the embed with admin commands
-                        message.channel.send({ embeds: [adminEmbed], components: [sendCloseBtn(message.guildId, returnedMsg.id)], fetchReply: true }).then(returnedMsg => {
+                        interaction.channel.send({ embeds: [adminEmbed], components: [sendCloseBtn(interaction.guildId, returnedMsg.id)], fetchReply: true }).then(returnedMsg => {
         
                             // delete the msg in 2 min unlesss its the dm's
-                            if (message.channel.type === 'GUILD_TEXT') bot.createTimedDelete(returnedMsg, 2);
+                            if (interaction.channel.type === 'GUILD_TEXT') bot.createTimedDelete(returnedMsg, 2);
                         });
                     }
                 });
@@ -135,26 +141,24 @@ exports.command = {
         }
     },
 
-    buttonClickCallback: function(message, interaction, parameters, roles) {
+    buttonCallback: function(parameters, interaction, obj) {
         if (parameters[2] !== 'close') return;
-
-        message.embeds.forEach(embed => {
+        interaction.message.embeds.forEach(embed => {
             // grab the command refrence at the footer of every embed
             // check if the message has a child
             let childRefrence = /\[(.+)\]/gm.exec(embed.footer.text)[1].split(',')[2];
             if (childRefrence === undefined) return;
 
             // delete its children
-            message.channel.messages.fetch(childRefrence)
+            interaction.message.channel.messages.fetch(childRefrence)
                 .then(message => message.delete()).catch(err => {});
         });
 
-        message.delete();
+        interaction.message.delete();
     },
 
-    canExecInDm: true,
-    useSlashCommands: true,
-    description: 'A command that displays all available commands.',
+    executesInDm: true,
+    isSlashCommand: true,
     roles: {
         user: global.userRoles,
         button: global.userRoles

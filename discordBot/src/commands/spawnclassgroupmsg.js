@@ -33,55 +33,58 @@ let embed = () => {
 }
 
 exports.command = {
-    commandName: 'SpawnClassGroupMsg',
-    callbackFunction: function(parameters, message, roles, slashCommand) {
+    details: {
+        commandName: 'SpawnClassGroupMsg',
+        commandShortDescription: 'This command spawns in the class group selector.',
+    },
+    commandCallback: function(parameters, interaction, obj) {
         //Return and throw an error if the cahannel Id provied is incorect
         let channel;
         if(parameters[1] !== undefined) channel = bot.client.channels.cache.get(parameters[1]);
-        else channel = message.channel;
+        else channel = interaction.channel;
 
-        let guild = bot.client.guilds.resolve(message.guildId);
+        let guild = bot.client.guilds.resolve(interaction.guildId);
 
         if (channel === undefined){
-            if(slashCommand === true) return message.reply({ 
-                content:`<@${message.user.id}>, Invalid parameter, could not locate the channel.`,
+            if(obj.isSlashCommand === true) return interaction.reply({ 
+                content:`<@${interaction.user.id}>, Invalid parameter, could not locate the channel.`,
                 ephemeral: true
             }); //Inform the user that the command failed
-            else return message.channel.send({
-                content:`<@${message.user.id}>, Invalid parameter, could not locate the channel.`,
+            else return interaction.channel.send({
+                content:`<@${interaction.user.id}>, Invalid parameter, could not locate the channel.`,
                 fetchReply:true
             }).then((msg) => bot.createTimedDelete(msg, 0.2)); 
         }
 
         channel.send({
                 embeds:[embed()], 
-                components: [interactables(message.guildId)], 
+                components: [interactables(interaction.guildId)], 
                 fetchReply: true 
             }).then(()=>{
-                if(slashCommand === true) message.reply({
-                    content:`<@${message.user.id}>, Message sent successfully`,
+                if(obj.isSlashCommand === true) interaction.reply({
+                    content:`<@${interaction.user.id}>, Message sent successfully`,
                     ephemeral: true
                 });
-                else message.delete();
+                else interaction.delete();
             }).catch(()=>{
-                if(slashCommand === true) message.reply({
-                    content:`<@${message.user.id}>, Message failed to send`,
+                if(obj.isSlashCommand === true) interaction.reply({
+                    content:`<@${interaction.user.id}>, Message failed to send`,
                     ephemeral: true
                 });
-                else message.channel.send({
-                    content:`<@${message.user.id}>, Message failed to send.`,
+                else interaction.channel.send({
+                    content:`<@${interaction.user.id}>, Message failed to send.`,
                 });
         });
     },
-    menuCallbackFunction: function(parameters, interaction, values){
+    menuCallback: function(parameters, interaction, obj){
         let guild = bot.client.guilds.cache.get(interaction.guild.id),
             removeRole = [];
 
         global.classRoles.forEach(roleName => {
-            if(values[0] !== roleName) removeRole = [...removeRole, guild.roles.cache.find(role => role.name.toLowerCase() === roleName)]
+            if(obj.values[0] !== roleName) removeRole = [...removeRole, guild.roles.cache.find(role => role.name.toLowerCase() === roleName)]
         })
 
-        let addRole = guild.roles.cache.find(role => role.name.toLowerCase() === values[0]);
+        let addRole = guild.roles.cache.find(role => role.name.toLowerCase() === obj.values[0]);
         guild.members.fetch(interaction.user.id).then((user)=>{
             user.roles.remove(removeRole).then(()=>{
                 user.roles.add(addRole)
@@ -108,16 +111,18 @@ exports.command = {
             });
         });
     },
-    canExecInDm: false,
-    useSlashCommands: true,
+
+    executesInDm: false,
+    isSlashCommand: true,
     helpEmbedPage: -1,
-    description: 'This command spawns in the class group selector.',
+
     roles: {
         user: global.adminRoles,
         button: global.userRoles,
         menu: global.userRoles
     },
-    slashParams:[
-        ['number', 'channel', 'The id of the cannel you want the message to be sent to', false]
+
+    parameters: [
+        { type: 'number', name: 'channel', description: 'The id of the cannel you want the message to be sent to', required: false }
     ]
 }

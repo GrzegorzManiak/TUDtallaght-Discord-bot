@@ -26,6 +26,6 @@ exports.slashInteractionHandler = async(interaction) =>{
     else { 
         let splitMessage = [interaction.commandName];
         interaction.options._hoistedOptions.forEach(subCommand => splitMessage = [...splitMessage, subCommand.value])
-        command.callbackFunction(splitMessage, interaction, roles, true);
+        command.commandCallback(splitMessage, interaction, {roles, isSlashCommand: true});
     }
 }

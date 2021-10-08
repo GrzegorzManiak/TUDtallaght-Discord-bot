@@ -59,18 +59,21 @@ async function getLinkAndSend(interaction, id = '') {
 }
 
 exports.command = {
-    commandName: 'SpawnAuthMsg',
-    callbackFunction: function(parameters, message, roles, slashCommand, allRoles = []) {
+    details: {
+        commandName: 'SpawnAuthMsg',
+        commandShortDescription: 'This command spawns the auth msg for users to link their accs.',
+    },
+    commandCallback: function(parameters, interaction, obj, allRoles = []) {
         //Return and throw an error if the cahannel Id provied is incorect
         let channel = bot.client.channels.cache.get(parameters[1]);
-        let guild = bot.client.guilds.resolve(message.guildId);
+        let guild = bot.client.guilds.resolve(interaction.guildId);
 
         if (channel === undefined){
-            if(slashCommand === true) return message.reply({ 
+            if(obj.isSlashCommand === true) return interaction.reply({ 
                 content:'Invalid parameter, could not locate the channel.',
                 ephemeral: true
             }); //Inform the user that the command failed
-            else return message.channel.send({
+            else return interaction.channel.send({
                 content:'Invalid parameter, could not locate the channel.',
                 fetchReply:true
             }).then((msg) => bot.createTimedDelete(msg, 0.2)); 
@@ -79,11 +82,11 @@ exports.command = {
         //Return and throw an error if the provided role is incorect
         guild.roles.cache.map(m => allRoles = [...allRoles, m.name]);
         if (parameters[2] === undefined || allRoles.includes(parameters[2]) === false){
-            if(slashCommand === true) return message.reply({ 
+            if(obj.isSlashCommand === true) return interaction.reply({ 
                 content:'Invalid parameter, could not locate role.',
                 ephemeral: true
             }); //Inform the user that the command failed
-            else return message.channel.send({
+            else return interaction.channel.send({
                 content: 'Invalid parameter, could not locate role.',
                 fetchReply:true
             }).then((msg) => bot.createTimedDelete(msg, 0.2));
@@ -92,27 +95,29 @@ exports.command = {
         //Send out the embed
         channel.send({
             embeds: [helpEmbed(parameters[2])],
-            components: [email(message.guildId)],
+            components: [email(interaction.guildId)],
             fetchReply: true
         }).then(() => {
-            if(slashCommand === true) message.reply({ content:'Authentication msg spawned in successfully', fetchReply:true }).then(msg =>{msg.delete();});
-            else message.delete();
+            if(obj.isSlashCommand === true) interaction.reply({ content:'Authentication msg spawned in successfully', fetchReply:true }).then(msg =>{msg.delete();});
+            else interaction.delete();
         });
     },
 
-    buttonClickCallback: function(message, interaction, parameters, roles) {
+    buttonCallback: function(parameters, interaction, obj) {
         getLinkAndSend(interaction);
     },
+
+    isSlashCommand: true,
+    executesInDm: false,
     helpEmbedPage: -1,
-    description: 'This command spawns the auth msg for users to link their accs.',
+
     roles: {
         user: global.adminRoles,
         button: global.userRoles
     },
-    useSlashCommands: true,
-    canExecInDm: false,
-    slashParams: [
-        ['number', 'channel', 'The id of the cannel you want the message to be sent to', true],
-        ['string', 'role', 'The name of the role you want to give upon verification', true]
+
+    parameters: [
+        { type: 'number', name: 'channel', description: 'The id of the cannel you want the message to be sent to', required: true },
+        { type: 'string', name: 'role', description: 'The name of the role you want to give upon verification', required: true }
     ]
 }

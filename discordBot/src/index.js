@@ -82,51 +82,55 @@ exports.hasPermissions = (requiredRoles, usersRoles, pass = false) => {
     return pass;
 }
 
-
-//TODO// I need to make this cleaner as and refactor it, right now im slapping things onto this as I need them.
-// {
-//  commandName: the name of the command, also used to actual call the command,
-//  callbackFunction(parameters, message, userroles): must take one parameter, will be exectued when the user calls the command,
-//  description: a short description on what the command dose.
-//  roles: [] an array of all the roles that can use this command
-//  reactionRoles: [] an array of all the roles that can react to this command
-//  reactionAddCallback(reactionEmojie, message, reaction, userroles): function called upon once a reaction is added to the message
-//  reactionRemCallback(reactionEmojie, message, reaction, userroles): function called upon once a reaction is removed from the message
-//  buttonClickCallback(message, interaction, parameters, roles)
-// }
-exports.addCommand = async function addCommand(params = { slashParams: [], commandName, description, callbackFunction, roles: [] }) {
+exports.addCommand = async function addCommand(params) {
     //Throw errors if not all required parameters are satisfied
-    if (config.commands[params.commandName]) throw new Error('A command with that name already exists');
-    if (params.commandName === undefined) throw new Error('No commandName provided');
-    if (params.callbackFunction === undefined) throw new Error('No callbackFunction provided');
+    let commandTemp = {
+        details: {
+            commandName: '',
+            commandShortDescription: '',
+            commandLongDescription: '',
+        },
 
-    if (params.roles === undefined) params.roles = [];
-    if (params.reactionRoles === undefined) params.reactionRoles = [];
-    if (params.buttonRoles === undefined) params.buttonRoles = [];
-    if (params.canExecInDm === undefined) params.canExecInDm = false;
+        roles: {
+            user: [], // Roles that can call the actual command
+            menu: [], // Roles that can interact with the menu attached to the command
+            button: [], // Roles that can click the buttons attached to the command
+            reaction: [], // Roles that can interact with reactions attached to the command
+        },
 
-    config.commands[params.commandName.toLowerCase()] = params;
+        parameters: [], // Paramters = [{ type:'', name:'', description: '', required: false }]
+        executesInDm: false, // Can the command execute in the users DM, Will use role data from the server defined in the config.serverid, leave false otherwise
+        interactionsInDm: false, // If a msg is sent to the user with attached interactables, can the user use them?
+        isSlashCommand: true, // Can this command be executed with discord slash commands?
+        helpEmbedPage: 0, 
 
+        commandCallback: function(parameters, interaction, obj = {roles, isSlashCommand}){},
+        menuCallback: function(parameters, interaction, obj = {values, roles}){},
+        buttonCallback: function(parameters, interaction, obj = {roles}){}
+    }
+
+    Object.assign(commandTemp, params);
+    config.commands[params?.details?.commandName.toLowerCase()] = params;
 }
 
 function addSlashCommands() {
     let guild = client.guilds.cache.get(config.serverid);
-    let commands = guild.commands
+    let commands = guild.commands;
 
     Object.keys(config.commands).forEach(command => {
-        if(config.commands[command]?.useSlashCommands !== true) return;
+        if(config.commands[command]?.isSlashCommand !== true) return;
 
         let data = new slashCommandBuilder()
 	        .setName(command)
-	        .setDescription(config.commands[command].description);
+	        .setDescription(config.commands[command].details.commandShortDescription);
 
-        if(config.commands[command]?.slashParams){
-            config.commands[command].slashParams.forEach(param => {
+        if(config.commands[command]?.parameters?.length > 0){
+            config.commands[command].parameters.forEach(param => {
                 function setParams(option){
-                    return option.setName(param[1]).setDescription(param[2]).setRequired(param[3] || false);
+                    return option.setName(param.name).setDescription(param.description).setRequired(param?.required || false);
                 }
 
-                switch(param[0]){
+                switch(param.type){
                     case 'string':
                         data.addStringOption(option => setParams(option))
                         break;

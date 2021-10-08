@@ -12,11 +12,14 @@ let sendCloseBtn = function(guild, id) {
 }
 
 exports.command = {
-    commandName: 'Timetable',
-    callbackFunction: function(parameters, message, roles, slashCommand = false) {
+    details: {
+        commandName: 'Timetable',
+        commandShortDescription: 'This command provides you with your timetable.',
+    },
+    commandCallback: function(parameters, message, obj = { isSlashCommand:false }) {
         // Im tring to avoid long path chains with process.cwd()
-        let timetableHelper = require(process.cwd() + '/helpers/timetable.js'),
-            classgroup = roles.find(role => { if(global.classRoles.includes(role)) return role;}),
+        let timetableHelper = require(process.cwd() + '\\discordBot\\helpers\\timetable.js'),
+            classgroup = obj.roles.find(role => { if(global.classRoles.includes(role)) return role;}),
             userName = message.user ?? message.author,
             embedArray = [],
             timetable = [];
@@ -30,7 +33,7 @@ exports.command = {
         }
 
         if(classgroup === null){
-            switch(slashCommand){
+            switch(obj.isSlashCommand){
                 case true: // If the user sends out a slash command, reply with an ephemeral msg
                     message.reply({
                         content: `<@${userName.id}>, You are not registerd under any class groups.`,
@@ -46,7 +49,7 @@ exports.command = {
         }
         
         // delete the msg that called the command if its in a server, not a dm.
-        if (message.channel.type === 'GUILD_TEXT' && slashCommand === false) message.delete().catch(()=>{});;
+        if (message.channel.type === 'GUILD_TEXT' && obj.isSlashCommand === false) message.delete().catch(()=>{});;
         
         Object.keys(timetable).forEach(day => {
             let dayCompiled = '';
@@ -84,7 +87,7 @@ exports.command = {
             components: [sendCloseBtn(message.guildId, message.id)]
         };
 
-        switch(slashCommand){
+        switch(obj.isSlashCommand){
             case true:
                 msgContent.ephemeral = true;
                 msgContent.components = [];
@@ -104,13 +107,15 @@ exports.command = {
                 return;
         }
     },
-    buttonClickCallback: function(message, interaction, parameters, roles) {
+
+    buttonCallback: function(parameters, interaction, obj) {
         // If the close button is clicked, delete the msg
-        if (parameters[2] === 'close') message.delete().catch(()=>{});
+        if (parameters[2] === 'close') interaction.message.delete().catch(()=>{});
     },
-    canExecInDm: true,
-    useSlashCommands: true,
-    description: 'This command provides you with your timetable.',
+
+    executesInDm: true,
+    isSlashCommand: true,
+    
     roles: {
         user: global.userRoles,
         button: global.userRoles
