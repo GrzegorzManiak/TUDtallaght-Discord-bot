@@ -22,5 +22,5 @@ exports.menuInteractionHandler = async(interaction) => {
         content: `<@${interaction.user.id}> You dont have the sufficient privileges to execute this command.`,
         ephemeral: true 
     });
-    else command?.menuCallbackFunction(parameters, interaction, interaction.values);   
+    else command?.menuCallback(parameters, interaction, { values:interaction.values, roles});   
 }

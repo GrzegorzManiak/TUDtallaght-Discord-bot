@@ -3,7 +3,7 @@ let config = bot.getConfig();
 
 function returnClasses(message, specificDay, edit = false, slashCommand, roles) {
     // Im tring to avoid long path chains with process.cwd()
-    let timetableHelper = require(process.cwd() + '/helpers/timetable.js'),
+    let timetableHelper = require(process.cwd() + '\\discordBot\\helpers\\timetable.js'),
         classgroup = roles.find(role => { if(global.classRoles.includes(role)) return role;}),
         userName = message.user ?? message.author,
         timetable = [];
@@ -157,7 +157,7 @@ function returnClasses(message, specificDay, edit = false, slashCommand, roles) 
     }
     // edit the message if any of the buttons are pressed
     else { 
-        message.edit({
+        message.message.edit({
             embeds: mainEmbed,
             fetchReply: true,
             components: [sendButtons()],
@@ -166,32 +166,34 @@ function returnClasses(message, specificDay, edit = false, slashCommand, roles) 
 }
 
 exports.command = {
-    commandName: 'Today',
-    callbackFunction: function(parameters, message, roles, slashCommand) {
-        returnClasses(message, undefined, false, slashCommand, roles);
+    details: {
+        commandName: 'Today',
+        commandShortDescription: 'This command provides you with your next classes for the day.',
     },
-    buttonClickCallback: function(message, interaction, parameters, roles) {
+    commandCallback: function(parameters, interaction, obj) {
+        returnClasses(interaction, undefined, false, obj.isSlashCommand, obj.roles);
+    },
+    buttonCallback: function(parameters, interaction, obj) {
         switch (parameters[2]) {
             case 'close':
-                message.delete().catch(()=>{});;
+                interaction.message.delete().catch(()=>{});;
                 return;
 
             case 'daybefore':
-                message.user = interaction.user;
-                returnClasses(message, parseInt(parameters[3]), true, false, roles);
+                returnClasses(interaction, parseInt(parameters[3]), true, false, obj.roles);
                 interaction.deferUpdate();
                 return;
 
             case 'dayafter':
-                message.user = interaction.user;
-                returnClasses(message, parseInt(parameters[3]), true, false, roles);
+                returnClasses(interaction, parseInt(parameters[3]), true, false, obj.roles);
                 interaction.deferUpdate();
                 return;
         }
     },
-    canExecInDm: true, // make it so the bot listens for this command in the dm's
-    useSlashCommands: true,
-    description: 'This command provides you with your next classes for the day.',
+
+    executesInDm: true,
+    isSlashCommand: true,
+  
     roles: {
         user: global.userRoles,
         button: global.userRoles

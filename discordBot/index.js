@@ -27,9 +27,9 @@ bot.addCommand(require(commandDirectory + 'timetable.js').command);
 bot.addCommand(require(commandDirectory + 'today.js').command);
 
 bot.setConfig({
-    serverid: '892714214383308800',
+    serverid: '892820301224751175',
     devid: ['460756817006428162'], 
-    token: process.env.token,
+    token: global.discord,
     useSlashCommands: true,
 });
 bot.startBot();

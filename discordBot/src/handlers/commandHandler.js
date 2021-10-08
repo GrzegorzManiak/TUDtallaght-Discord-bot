@@ -12,7 +12,7 @@ exports.commandHandler = async(message) => {
     let command = config.commands[splitMessage[0].substring(1).toLowerCase()];
 
     // check if the command can be executed in the dms
-    if (command?.canExecInDm !== true && message.channel.type === 'DM') return;
+    if (command?.executesInDm !== true && message.channel.type === 'DM') return;
 
     // grab the current user
     let member,
@@ -28,6 +28,6 @@ exports.commandHandler = async(message) => {
     // get all the users roles and add them the the 'roles' array
     member.roles.cache.map(m => roles = [...roles, m.name.toLowerCase()]);
 
-    if (config.devid.includes(message.author.id) === false && bot.hasPermissions(roles, [...command.roles.user, ...config.roles.admin]) === false) message.channel.send(`<@${message.author.id}> You dont have the sufficient privileges to execute this command.`);
-    else command.callbackFunction(splitMessage, message, roles, false)
+    if (config.devid.includes(message.author.id) === false && bot.hasPermissions(roles, [...command?.roles?.user, ...config.roles.admin]) === false) message.channel.send(`<@${message.author.id}> You dont have the sufficient privileges to execute this command.`);
+    else command.commandCallback(splitMessage, message, { roles, isSlashCommand: false })
 }

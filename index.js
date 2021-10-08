@@ -20,7 +20,7 @@ global.config = {
     ]
 }
 
-require('./helpers/timetable.js')
+require('./discordBot/helpers/timetable.js')
 
 //--// Set to true for express to use user provided certs, 
 //--// Can be used inconjunction with Cloudflare's Origin CA certificates.

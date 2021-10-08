@@ -6,11 +6,6 @@ exports.buttonInteractionHandler = async(interaction) => {
     if (id === undefined) return;
     let parameters = id.split(',');
 
-    // Load the msg in if its not cached
-    const message = !interaction.message.author ?
-        await interaction.message.fetch() :
-        interaction.message;
-
     command = config?.commands[parameters[1].toLowerCase()];
 
     // check if the command exists
@@ -20,7 +15,7 @@ exports.buttonInteractionHandler = async(interaction) => {
     let member,
         roles = []
 
-    if (message.channel.type === 'GUILD_TEXT') member = interaction.guild.members.cache.get(interaction.user.id);
+    if (interaction.channel.type === 'GUILD_TEXT') member = interaction.guild.members.cache.get(interaction.user.id);
     else {
         let guild = bot.client.guilds.cache.get(config.serverid);
         member = await guild.members.fetch(interaction.user.id);
@@ -32,5 +27,5 @@ exports.buttonInteractionHandler = async(interaction) => {
 
     // Check if the user containts the right premisions to react
     if (config.devid.includes(interaction.user.id) === false && bot.hasPermissions(roles, [...command.roles.button, ...command.roles.user, ...config.roles.admin]) !== true) return;
-    return command.buttonClickCallback(message, interaction, parameters, roles);
+    return command.buttonCallback(parameters, interaction, { roles });
 }
