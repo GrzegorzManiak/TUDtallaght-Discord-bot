@@ -1,7 +1,9 @@
 const bot = require('../');
+let classes = require('../classes');
 let config = bot.getConfig();
 
 exports.menuInteractionHandler = async(interaction) => {
+     //TODO// MAKE ALL CUSTOM ID'S INTO JSON THAN ENCODE THEM IN BASE64.
     let id = interaction.customId;
     if (id === undefined) return;
     let parameters = id.split(',');

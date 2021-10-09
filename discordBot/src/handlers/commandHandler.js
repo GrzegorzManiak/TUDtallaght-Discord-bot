@@ -1,4 +1,5 @@
 const bot = require('../');
+let classes = require('../classes');
 let config = bot.getConfig();
 
 exports.commandHandler = async(message) => {
@@ -7,27 +8,19 @@ exports.commandHandler = async(message) => {
 
     // Splits the message content up into words eg => a b c = ['a','b','c']
     let splitMessage = message.content.split(' ');
+    
+    let command = config?.commands[splitMessage[0]?.substring(1)?.toLowerCase()],
+        user = new classes.user(message.author.id, message.channel.type === 'DM' ? message.author.id : message.guild.id, bot.client),
+        hasPermissions = await user.hasRoles(command.roles.user) || config.devid.includes(interaction.user.id),
+        roles = await user.getRolesName();
+    
+    switch(hasPermissions) {
+        case true:
+            // check if the command can be executed in the dms
+            if (command?.executesInDm !== true && message.channel.type === 'DM') return;
+            return command.commandCallback(splitMessage, message, { roles, isSlashCommand: false});
 
-    // gives us the acutal command name by getting the first word and dropping the prefix character
-    let command = config.commands[splitMessage[0].substring(1).toLowerCase()];
-
-    // check if the command can be executed in the dms
-    if (command?.executesInDm !== true && message.channel.type === 'DM') return;
-
-    // grab the current user
-    let member,
-        roles = []
-
-    // check if the message is comming from a guild or a dm channel
-    if (message.channel.type === 'GUILD_TEXT') member = message.guild.members.cache.get(message.author.id);
-    else {
-        let guild = bot.client.guilds.cache.get(config.serverid);
-        member = await guild.members.fetch(message.author.id);
+        default:
+            return message.channel.send(`<@${message.author.id}> You dont have the sufficient privileges to execute this command.`);
     }
-
-    // get all the users roles and add them the the 'roles' array
-    member.roles.cache.map(m => roles = [...roles, m.name.toLowerCase()]);
-
-    if (config.devid.includes(message.author.id) === false && bot.hasPermissions(roles, [...command?.roles?.user, ...config.roles.admin]) === false) message.channel.send(`<@${message.author.id}> You dont have the sufficient privileges to execute this command.`);
-    else command.commandCallback(splitMessage, message, { roles, isSlashCommand: false })
 }

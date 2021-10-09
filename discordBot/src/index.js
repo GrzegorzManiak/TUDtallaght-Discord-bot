@@ -37,14 +37,18 @@ exports.getConfig = ()=>{
 }
 
 // this function starts the bot
-exports.startBot = () => {
+exports.startBot = async() => {
     // Authenticate the bot
     client.login(config.token);
 
-    // confirm that the bot authenticated
-    client.on('ready', () => {
-        console.log(`Logged in as ${client.user.tag}, ${client.user.id}!`);
-        if(config.useSlashCommands === true) addSlashCommands();
+    // Return a promise so that other functions can execute after authentication
+    return new Promise(function(resolve, reject) {
+        // confirm that the bot authenticated
+        client.on('ready', () => {
+            console.log(`Logged in as ${client.user.tag}, ${client.user.id}!`);
+            if(config.useSlashCommands === true) addSlashCommands();
+            resolve(client);
+        });
     });
 }
 
