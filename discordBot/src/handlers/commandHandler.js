@@ -8,9 +8,9 @@ exports.commandHandler = async(message) => {
 
     // Splits the message content up into words eg => a b c = ['a','b','c']
     let splitMessage = message.content.split(' ');
-    
+
     let command = config?.commands[splitMessage[0]?.substring(1)?.toLowerCase()],
-        user = new classes.user(message.author.id, message.channel.type === 'DM' ? message.author.id : message.guild.id, bot.client),
+        user = new classes.user(message.author.id, message.channel.type === 'DM' ? config.serverid : message.guild.id, bot.client),
         hasPermissions = await user.hasRoles(command.roles.user) || config.devid.includes(interaction.user.id),
         roles = await user.getRolesName();
     

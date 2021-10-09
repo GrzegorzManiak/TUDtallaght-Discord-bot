@@ -156,3 +156,11 @@ exports.createTimedDelete = async(message, time) => {
         message.delete().catch(() => {});
     }, time * 60000);
 }
+
+exports.createCustomID = () => {
+
+}
+
+exports.decodeCustomID = () => {
+    
+}
