@@ -5,7 +5,7 @@ let sendCloseBtn = function(guild, id) {
     return new bot.discordjs.MessageActionRow()
         .addComponents(
             new bot.discordjs.MessageButton()
-            .setCustomId(`button,timetable,close,${guild},${id}`)
+            .setCustomId(bot.createCustomID('timetable', { action: 'close' }))
             .setLabel("Close")
             .setStyle('DANGER')
         );
@@ -110,7 +110,7 @@ exports.command = {
 
     buttonCallback: function(parameters, interaction, obj) {
         // If the close button is clicked, delete the msg
-        if (parameters[2] === 'close') interaction.message.delete().catch(()=>{});
+        if (parameters.action === 'close') interaction.message.delete().catch(()=>{});
     },
 
     executesInDm: true,

@@ -11,12 +11,13 @@ exports.slashInteractionHandler = async(interaction) =>{
         hasPermissions = await user.hasRoles(command.roles.user) || config.devid.includes(interaction.user.id),
         roles = await user.getRolesName();
 
+    if(interaction.channel.type === 'DM' && command.executesInDm !== true) return;
+
     switch(hasPermissions) {
         case true:
             let splitMessage = [interaction.commandName];
             interaction.options._hoistedOptions.forEach(subCommand => splitMessage = [...splitMessage, subCommand.value])
-            command.commandCallback(splitMessage, interaction, { roles, isSlashCommand: true});
-            return;
+            return command.commandCallback(splitMessage, interaction, { roles, isSlashCommand: true});
 
         default:
             return interaction.reply({ 

@@ -14,10 +14,10 @@ exports.commandHandler = async(message) => {
         hasPermissions = await user.hasRoles(command.roles.user) || config.devid.includes(interaction.user.id),
         roles = await user.getRolesName();
     
+        if(interaction.channel.type === 'DM' && command.executesInDm !== true) return;
+
     switch(hasPermissions) {
         case true:
-            // check if the command can be executed in the dms
-            if (command?.executesInDm !== true && message.channel.type === 'DM') return;
             return command.commandCallback(splitMessage, message, { roles, isSlashCommand: false});
 
         default:

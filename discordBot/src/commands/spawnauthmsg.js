@@ -21,7 +21,7 @@ let email = function(guild) {
     return new bot.discordjs.MessageActionRow()
         .addComponents(
             new bot.discordjs.MessageButton()
-            .setCustomId(`button,spawnauthmsg,verify,${guild}`)
+            .setCustomId(bot.createCustomID('spawnauthmsg', { action: 'verify' }))
             .setLabel("Verify")
             .setStyle('PRIMARY')
         );

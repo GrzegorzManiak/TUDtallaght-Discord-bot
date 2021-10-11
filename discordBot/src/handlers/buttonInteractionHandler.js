@@ -1,32 +1,21 @@
 const bot = require('../');
+let classes = require('../classes');
 let config = bot.getConfig();
 
 exports.buttonInteractionHandler = async(interaction) => {
-     //TODO// MAKE ALL CUSTOM ID'S INTO JSON THAN ENCODE THEM IN BASE64.
-    let id = interaction.customId;
-    if (id === undefined) return;
-    let parameters = id.split(',');
+    let parameters = bot.decodeCustomID(interaction?.customId),
+        command = config?.commands[parameters?.commandName.toLowerCase()],
+        user = new classes.user(interaction.user.id, interaction.channel.type === 'DM' ? config.serverid : interaction.guild.id, bot.client),
+        hasPermissions = await user.hasRoles(command.roles.user) || config.devid.includes(interaction.user.id),
+        roles = await user.getRolesName();
 
-    command = config?.commands[parameters[1].toLowerCase()];
+    if(interaction.channel.type === 'DM' && command.executesInDm !== true) return interaction.deferUpdate();
 
-    // check if the command exists
-    if (command === undefined) return;
+    switch(hasPermissions){
+        case true:
+            return command.buttonCallback(parameters, interaction, { roles });
 
-    // grab the current user
-    let member,
-        roles = []
-
-    if (interaction.channel.type === 'GUILD_TEXT') member = interaction.guild.members.cache.get(interaction.user.id);
-    else {
-        let guild = bot.client.guilds.cache.get(config.serverid);
-        member = await guild.members.fetch(interaction.user.id);
-        if(member === undefined) return;
+        default:
+            return interaction.deferUpdate();
     }
-
-    // get all the users roles and add them the the 'roles' array
-    member.roles.cache.map(m => roles = [...roles, m.name.toLowerCase()]);
-
-    // Check if the user containts the right premisions to react
-    if (config.devid.includes(interaction.user.id) === false && bot.hasPermissions(roles, [...command.roles.button, ...command.roles.user, ...config.roles.admin]) !== true) return;
-    return command.buttonCallback(parameters, interaction, { roles });
 }

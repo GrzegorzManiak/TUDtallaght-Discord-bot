@@ -91,21 +91,21 @@ function returnClasses(message, specificDay, edit = false, slashCommand, roles) 
             // add a close button to the embed
             .addComponents(
                 new bot.discordjs.MessageButton()
-                .setCustomId(`button,today,close`)
+                .setCustomId(bot.createCustomID('today', { action: 'close' }))
                 .setLabel("Close")
                 .setStyle('DANGER')
             )
             // add a 'day before' button to the embed which edits the original message with the classes for the prior day
             .addComponents(
                 new bot.discordjs.MessageButton()
-                .setCustomId(`button,today,daybefore,${yesterday()}`)
+                .setCustomId(bot.createCustomID('today', { action: 'daybefore' }))
                 .setLabel("Day before")
                 .setStyle('PRIMARY')
             )
             // add a 'day after' button to the embed which edits the original message with the classes for the following day
             .addComponents(
                 new bot.discordjs.MessageButton()
-                .setCustomId(`button,today,dayafter,${tommorow()}`)
+                .setCustomId(bot.createCustomID('today', { action: 'dayafter' }))
                 .setLabel("Day after")
                 .setStyle('PRIMARY')
             );
@@ -174,7 +174,7 @@ exports.command = {
         returnClasses(interaction, undefined, false, obj.isSlashCommand, obj.roles);
     },
     buttonCallback: function(parameters, interaction, obj) {
-        switch (parameters[2]) {
+        switch (parameters.action) {
             case 'close':
                 interaction.message.delete().catch(()=>{});;
                 return;

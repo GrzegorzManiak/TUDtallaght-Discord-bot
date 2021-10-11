@@ -3,26 +3,22 @@ let classes = require('../classes');
 let config = bot.getConfig();
 
 exports.menuInteractionHandler = async(interaction) => {
-     //TODO// MAKE ALL CUSTOM ID'S INTO JSON THAN ENCODE THEM IN BASE64.
-    let id = interaction.customId;
-    if (id === undefined) return;
-    let parameters = id.split(',');
+    let parameters = bot.decodeCustomID(interaction?.customId),
+        command = config?.commands[parameters?.commandName.toLowerCase()],
+        user = new classes.user(interaction.user.id, interaction.channel.type === 'DM' ? config.serverid : interaction.guild.id, bot.client),
+        hasPermissions = await user.hasRoles(command.roles.user) || config.devid.includes(interaction.user.id),
+        roles = await user.getRolesName();
 
-    let roles = [],
-        command = parameters[1].toLowerCase();
+    if(interaction.channel.type === 'DM' && command.executesInDm !== true) return;
 
-    if(config?.commands[command] === undefined) return;
-    else command = config.commands[command];
+    switch(hasPermissions){
+        case true:
+            return command?.menuCallback(parameters, interaction, { values:interaction.values, roles });   
 
-    let guild = bot.client.guilds.cache.get(config.serverid);
-    let member = await guild.members.fetch(interaction.user.id);
-    
-    // get all the users roles and add them the the 'roles' array
-    member.roles.cache.map(m => roles = [...roles, m.name.toLowerCase()]);
-
-    if (config.devid.includes(interaction.user.id) === false && bot.hasPermissions(roles, [...command?.roles?.menu, ...config.roles.admin]) !== true) interaction.reply({ 
-        content: `<@${interaction.user.id}> You dont have the sufficient privileges to execute this command.`,
-        ephemeral: true 
-    });
-    else command?.menuCallback(parameters, interaction, { values:interaction.values, roles});   
+        case false:
+            return interaction.reply({ 
+                content: `<@${interaction.user.id}> You dont have the sufficient privileges to execute this command.`,
+                ephemeral: true 
+            });
+    }
 }

@@ -157,10 +157,11 @@ exports.createTimedDelete = async(message, time) => {
     }, time * 60000);
 }
 
-exports.createCustomID = (obj) => {
-    return btoa(JSON.stringify(obj));
+exports.createCustomID = (commandName, parameters = {}) => {
+    parameters.commandName = commandName;
+    return btoa(JSON.stringify(parameters));
 }
 
-exports.decodeCustomID = (b64) => {
-    return JSON.parse(atob(encoded));
+exports.decodeCustomID = (b64 = '') => {
+    return JSON.parse(atob(b64));
 }

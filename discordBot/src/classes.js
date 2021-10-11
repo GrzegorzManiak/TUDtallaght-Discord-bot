@@ -12,7 +12,7 @@ exports.user = class user {
     getUser(){
         return this.#user.then((usr) => {
             return usr;
-        });
+        }).catch((err) => console.log(err));
     }
 
     getGuild(){
@@ -22,7 +22,7 @@ exports.user = class user {
     sendMessage(content){
         return this.#user.then((usr) => {
             return usr.send(content);
-        });
+        }).catch((err) => console.log(err));
     }
 
     //--// ROLES //--//
@@ -48,7 +48,7 @@ exports.user = class user {
 
                 return pass;
             });
-        })
+        });
     }
 
     getRoles(){
@@ -56,7 +56,7 @@ exports.user = class user {
             let roles = [];
             usr.roles.cache.map(role => roles = [...roles, role]);
             return roles;
-        })
+        }).catch((err) => console.log(err));
     }
 
     getRolesId(){
@@ -64,7 +64,7 @@ exports.user = class user {
             let roles = [];
             usr.roles.cache.map(role => roles = [...roles, role.id]);
             return roles;
-        })
+        }).catch((err) => console.log(err));
     }
 
     getRolesName(){
@@ -72,7 +72,7 @@ exports.user = class user {
             let roles = [];
             usr.roles.cache.map(role => roles = [...roles, role.name]);
             return roles;
-        })
+        }).catch((err) => console.log(err));
     }
     //--// END //--//
 };
