@@ -44,7 +44,7 @@ exports.user = class user {
                         if(requiredRoles.includes(givenRole)) pass = true;
                     });
                 }
-                else if(roles.includes(requiredRoles.toLowerCase())) pass = true;
+                else if(roles?.includes(requiredRoles?.toLowerCase())) pass = true;
 
                 return pass;
             });

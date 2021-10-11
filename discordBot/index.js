@@ -30,25 +30,11 @@ bot.setConfig({
     serverid: '892820301224751175',
     devid: ['460756817006428162'], 
     token: global.discord,
-    useSlashCommands: true,
+    allowslashcommands: true,
+    allowdmcommands: false,
+    allowdminteractions: false,
+    logCommands: true
 });
 
-bot.startBot().then(async(client) => {
-    let classes = require('./src/classes');
-    let user = new classes.user('460756817006428162', '892820301224751175', client);
-
-    let roles = await user.getRolesName();
-    let pass = await user.hasRoles(roles);
-
-    console.log(pass)
-
-    user.sendMessage({ content:'poo', fetchReply: true}).then((msg) => {
-        let message = new classes.message(msg, client);
-
-        message.delete().then((rtn) => console.log(rtn));
-        message.delete().then((rtn) => console.log(rtn.httpStatus));
-
-        message.getUser().then((usr) => console.log(usr))
-    });
-});
+bot.startBot().then(async(client) => {});
 

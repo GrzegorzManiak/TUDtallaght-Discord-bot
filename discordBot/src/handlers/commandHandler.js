@@ -11,16 +11,19 @@ exports.commandHandler = async(message) => {
 
     let command = config?.commands[splitMessage[0]?.substring(1)?.toLowerCase()],
         user = new classes.user(message.author.id, message.channel.type === 'DM' ? config.serverid : message.guild.id, bot.client),
-        hasPermissions = await user.hasRoles(command.roles.user) || config.devid.includes(interaction.user.id),
-        roles = await user.getRolesName();
-    
-        if(interaction.channel.type === 'DM' && command.executesInDm !== true) return;
+        hasPermissions = await user.hasRoles(command?.roles?.user) || config?.devid?.includes(command?.author?.id) || false,
+        roles = await user.getRolesName() || undefined;
+
+    if(config.logCommands === true) bot.log(message.author, splitMessage, message?.channel?.type);
+    if(message?.channel?.type === 'DM' && command?.executesInDm !== true && config?.allowdmcommands !== true) return;
 
     switch(hasPermissions) {
         case true:
             return command.commandCallback(splitMessage, message, { roles, isSlashCommand: false});
 
-        default:
-            return message.channel.send(`<@${message.author.id}> You dont have the sufficient privileges to execute this command.`);
+        case false:
+            return message.channel.send({ 
+                content: `<@${message.author.id}> You dont have the sufficient privileges to execute this command.`
+            });
     }
 }

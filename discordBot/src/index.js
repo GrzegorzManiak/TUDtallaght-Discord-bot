@@ -20,7 +20,10 @@ let config = {
         admin: []
     },
     commands: {},
-    allowslashcommands: true,
+    logCommands: false,
+    allowslashcommands: false,
+    allowdmcommands: false,
+    allowdminteractions: false,
     prefix: '.',
     token: '',
     serverid: '',
@@ -164,4 +167,8 @@ exports.createCustomID = (commandName, parameters = {}) => {
 
 exports.decodeCustomID = (b64 = '') => {
     return JSON.parse(atob(b64));
+}
+
+exports.log = function(user, command, type){
+    console.log(`${user.id}:${user.tag} Attempted ${command} in ${type}`);
 }
