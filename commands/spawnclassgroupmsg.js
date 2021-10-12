@@ -1,11 +1,11 @@
-const bot = require('../index.js')
+const bot = require('../source')
 let config = bot.getConfig();
 
 let interactables = (guild) => {
     return new bot.discordjs.MessageActionRow()
         .addComponents(
             new bot.discordjs.MessageSelectMenu()
-            .setCustomId(`button,spawnclassgroupmsg,select,${guild}`)
+            .setCustomId(bot.createCustomID('SpawnClassGroupMsg', { action: 'select' }))
             .addOptions([
                 { label: 'Group 1A1', value: global.classRoles[0] },
                 { label: 'Group 1A2', value: global.classRoles[1] },

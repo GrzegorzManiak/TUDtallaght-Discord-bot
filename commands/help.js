@@ -1,4 +1,4 @@
-const bot = require('../index.js')
+const bot = require('../source')
 let config = bot.getConfig();
 
 // Embed for any command with a helpEmbedPage: 0 or none.
@@ -37,7 +37,7 @@ const sendCloseBtn = function(guild, id) {
     return new bot.discordjs.MessageActionRow()
         .addComponents(
             new bot.discordjs.MessageButton()
-            .setCustomId(`button,help,close,${guild},${id}`)
+            .setCustomId(bot.createCustomID('help', { action: 'close' }))
             .setLabel("Close")
             .setStyle('DANGER')
         );
@@ -142,7 +142,7 @@ exports.command = {
     },
 
     buttonCallback: function(parameters, interaction, obj) {
-        if (parameters[2] !== 'close') return;
+        if (parameters.action !== 'close') return;
         interaction.message.embeds.forEach(embed => {
             // grab the command refrence at the footer of every embed
             // check if the message has a child

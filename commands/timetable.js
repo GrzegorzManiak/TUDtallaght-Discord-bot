@@ -1,11 +1,11 @@
-const bot = require('../index.js')
+const bot = require('../source')
 let config = bot.getConfig();
 
 let sendCloseBtn = function(guild, id) {
     return new bot.discordjs.MessageActionRow()
         .addComponents(
             new bot.discordjs.MessageButton()
-            .setCustomId(`button,timetable,close,${guild},${id}`)
+            .setCustomId(bot.createCustomID('timetable', { action: 'close' }))
             .setLabel("Close")
             .setStyle('DANGER')
         );
@@ -18,7 +18,7 @@ exports.command = {
     },
     commandCallback: function(parameters, message, obj = { isSlashCommand:false }) {
         // Im tring to avoid long path chains with process.cwd()
-        let timetableHelper = require(process.cwd() + '\\discordBot\\helpers\\timetable.js'),
+        let timetableHelper = require(process.cwd() + '\\helpers\\timetable.js'),
             classgroup = obj.roles.find(role => { if(global.classRoles.includes(role)) return role;}),
             userName = message.user ?? message.author,
             embedArray = [],
@@ -110,7 +110,7 @@ exports.command = {
 
     buttonCallback: function(parameters, interaction, obj) {
         // If the close button is clicked, delete the msg
-        if (parameters[2] === 'close') interaction.message.delete().catch(()=>{});
+        if (parameters.action === 'close') interaction.message.delete().catch(()=>{});
     },
 
     executesInDm: true,

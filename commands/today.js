@@ -1,9 +1,9 @@
-const bot = require('../index.js')
+const bot = require('../source')
 let config = bot.getConfig();
 
 function returnClasses(message, specificDay, edit = false, slashCommand, roles) {
     // Im tring to avoid long path chains with process.cwd()
-    let timetableHelper = require(process.cwd() + '\\discordBot\\helpers\\timetable.js'),
+    let timetableHelper = require(process.cwd() + '\\helpers\\timetable.js'),
         classgroup = roles.find(role => { if(global.classRoles.includes(role)) return role;}),
         userName = message.user ?? message.author,
         timetable = [];
@@ -91,21 +91,21 @@ function returnClasses(message, specificDay, edit = false, slashCommand, roles) 
             // add a close button to the embed
             .addComponents(
                 new bot.discordjs.MessageButton()
-                .setCustomId(`button,today,close`)
+                .setCustomId(bot.createCustomID('today', { action: 'close' }))
                 .setLabel("Close")
                 .setStyle('DANGER')
             )
             // add a 'day before' button to the embed which edits the original message with the classes for the prior day
             .addComponents(
                 new bot.discordjs.MessageButton()
-                .setCustomId(`button,today,daybefore,${yesterday()}`)
+                .setCustomId(bot.createCustomID('today', { action: 'daybefore', day: yesterday() }))
                 .setLabel("Day before")
                 .setStyle('PRIMARY')
             )
             // add a 'day after' button to the embed which edits the original message with the classes for the following day
             .addComponents(
                 new bot.discordjs.MessageButton()
-                .setCustomId(`button,today,dayafter,${tommorow()}`)
+                .setCustomId(bot.createCustomID('today', { action: 'dayafter', day: tommorow() }))
                 .setLabel("Day after")
                 .setStyle('PRIMARY')
             );
@@ -174,18 +174,18 @@ exports.command = {
         returnClasses(interaction, undefined, false, obj.isSlashCommand, obj.roles);
     },
     buttonCallback: function(parameters, interaction, obj) {
-        switch (parameters[2]) {
+        switch (parameters.action) {
             case 'close':
                 interaction.message.delete().catch(()=>{});;
                 return;
 
             case 'daybefore':
-                returnClasses(interaction, parseInt(parameters[3]), true, false, obj.roles);
+                returnClasses(interaction, parseInt(parameters.day), true, false, obj.roles);
                 interaction.deferUpdate();
                 return;
 
             case 'dayafter':
-                returnClasses(interaction, parseInt(parameters[3]), true, false, obj.roles);
+                returnClasses(interaction, parseInt(parameters.day), true, false, obj.roles);
                 interaction.deferUpdate();
                 return;
         }
@@ -193,7 +193,8 @@ exports.command = {
 
     executesInDm: true,
     isSlashCommand: true,
-  
+    interactionsInDm: true,
+
     roles: {
         user: global.userRoles,
         button: global.userRoles

@@ -20,7 +20,10 @@ let config = {
         admin: []
     },
     commands: {},
-    allowslashcommands: true,
+    logCommands: false,
+    allowslashcommands: false,
+    allowdmcommands: false,
+    allowdminteractions: false,
     prefix: '.',
     token: '',
     serverid: '',
@@ -37,14 +40,18 @@ exports.getConfig = ()=>{
 }
 
 // this function starts the bot
-exports.startBot = () => {
+exports.startBot = async() => {
     // Authenticate the bot
     client.login(config.token);
 
-    // confirm that the bot authenticated
-    client.on('ready', () => {
-        console.log(`Logged in as ${client.user.tag}, ${client.user.id}!`);
-        if(config.useSlashCommands === true) addSlashCommands();
+    // Return a promise so that other functions can execute after authentication
+    return new Promise(function(resolve, reject) {
+        // confirm that the bot authenticated
+        client.on('ready', () => {
+            console.log(`Logged in as ${client.user.tag}, ${client.user.id}!`);
+            if(config.useSlashCommands === true) addSlashCommands();
+            resolve(client);
+        });
     });
 }
 
@@ -59,6 +66,7 @@ client.on('messageReactionAdd', async(reaction, user) => {
     require('./handlers/reactionHandler').reactionHandler(reaction, user, false);
 });
 */
+
 // triggers everytime a interaction is created.
 client.on('interactionCreate', async(interaction) => {
     if (interaction?.componentType === 'BUTTON') 
@@ -100,7 +108,7 @@ exports.addCommand = async function addCommand(params) {
 
         parameters: [], // Paramters = [{ type:'', name:'', description: '', required: false }]
         executesInDm: false, // Can the command execute in the users DM, Will use role data from the server defined in the config.serverid, leave false otherwise
-        interactionsInDm: false, // If a msg is sent to the user with attached interactables, can the user use them?
+        interactionsInDm: true, // If a msg is sent to the user with attached interactables, can the user use them?
         isSlashCommand: true, // Can this command be executed with discord slash commands?
         helpEmbedPage: 0, 
 
@@ -110,7 +118,7 @@ exports.addCommand = async function addCommand(params) {
     }
 
     Object.assign(commandTemp, params);
-    config.commands[params?.details?.commandName.toLowerCase()] = params;
+    config.commands[params?.details?.commandName.toLowerCase()] = commandTemp;
 }
 
 function addSlashCommands() {
@@ -151,4 +159,17 @@ exports.createTimedDelete = async(message, time) => {
     setTimeout(() => {
         message.delete().catch(() => {});
     }, time * 60000);
+}
+
+exports.createCustomID = (commandName, parameters = {}) => {
+    parameters.commandName = commandName;
+    return btoa(JSON.stringify(parameters));
+}
+
+exports.decodeCustomID = (b64 = '') => {
+    return JSON.parse(atob(b64));
+}
+
+exports.log = function(user, command, type){
+    console.log(`${user.id}:${user.tag} Attempted ${command} in ${type}`);
 }
