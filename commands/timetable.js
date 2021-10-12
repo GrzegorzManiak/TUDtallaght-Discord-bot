@@ -1,4 +1,4 @@
-const bot = require('../index.js')
+const bot = require('../source')
 let config = bot.getConfig();
 
 let sendCloseBtn = function(guild, id) {
@@ -18,7 +18,7 @@ exports.command = {
     },
     commandCallback: function(parameters, message, obj = { isSlashCommand:false }) {
         // Im tring to avoid long path chains with process.cwd()
-        let timetableHelper = require(process.cwd() + '\\discordBot\\helpers\\timetable.js'),
+        let timetableHelper = require(process.cwd() + '\\helpers\\timetable.js'),
             classgroup = obj.roles.find(role => { if(global.classRoles.includes(role)) return role;}),
             userName = message.user ?? message.author,
             embedArray = [],

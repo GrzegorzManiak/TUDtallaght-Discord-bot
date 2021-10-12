@@ -1,4 +1,4 @@
-const bot = require('../index.js')
+const bot = require('../source')
 let config = bot.getConfig();
 
 // Embed for any command with a helpEmbedPage: 0 or none.

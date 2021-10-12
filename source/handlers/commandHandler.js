@@ -15,11 +15,11 @@ exports.commandHandler = async(message) => {
         roles = await user.getRolesName() || undefined;
 
     if(config.logCommands === true) bot.log(message.author, splitMessage, message?.channel?.type);
-    if(message?.channel?.type === 'DM' && command?.executesInDm !== true && config?.allowdmcommands !== true) return;
+    if(message?.channel?.type === 'DM' && command?.executesInDm === false || config?.allowdmcommands === false) return;
 
     switch(hasPermissions) {
         case true:
-            return command.commandCallback(splitMessage, message, { roles, isSlashCommand: false});
+            return command.commandCallback(splitMessage, message, { roles, isSlashCommand: false });
 
         case false:
             return message.channel.send({ 

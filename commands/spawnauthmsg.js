@@ -1,4 +1,4 @@
-const bot = require('../index.js')
+const bot = require('../source')
 let config = bot.getConfig();
 
 let helpEmbed = function(roleName) {

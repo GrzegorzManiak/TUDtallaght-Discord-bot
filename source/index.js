@@ -66,6 +66,7 @@ client.on('messageReactionAdd', async(reaction, user) => {
     require('./handlers/reactionHandler').reactionHandler(reaction, user, false);
 });
 */
+
 // triggers everytime a interaction is created.
 client.on('interactionCreate', async(interaction) => {
     if (interaction?.componentType === 'BUTTON') 
@@ -107,7 +108,7 @@ exports.addCommand = async function addCommand(params) {
 
         parameters: [], // Paramters = [{ type:'', name:'', description: '', required: false }]
         executesInDm: false, // Can the command execute in the users DM, Will use role data from the server defined in the config.serverid, leave false otherwise
-        interactionsInDm: false, // If a msg is sent to the user with attached interactables, can the user use them?
+        interactionsInDm: true, // If a msg is sent to the user with attached interactables, can the user use them?
         isSlashCommand: true, // Can this command be executed with discord slash commands?
         helpEmbedPage: 0, 
 
@@ -117,7 +118,7 @@ exports.addCommand = async function addCommand(params) {
     }
 
     Object.assign(commandTemp, params);
-    config.commands[params?.details?.commandName.toLowerCase()] = params;
+    config.commands[params?.details?.commandName.toLowerCase()] = commandTemp;
 }
 
 function addSlashCommands() {
