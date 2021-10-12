@@ -20,6 +20,9 @@ bot.addCommand(require(commandDirectory + 'spawnauthmsg.js').command);
 //--// spawns a msg where the user can select their class group //--//
 bot.addCommand(require(commandDirectory + 'spawnclassgroupmsg.js').command);
 
+//--// spawns a msg where the user can select if they want to be reminded //--//
+bot.addCommand(require(commandDirectory + 'spawnremind.js').command);
+
 //--// get users timetable //--//
 bot.addCommand(require(commandDirectory + 'timetable.js').command);
 
@@ -28,7 +31,7 @@ bot.addCommand(require(commandDirectory + 'today.js').command);
 
 bot.setConfig({
     serverid: '892820301224751175',
-    devid: ['4607563817006428162'], 
+    devid: ['460756817006428162'], 
     token: global.discord,
     allowslashcommands: true,
     allowdmcommands: true,

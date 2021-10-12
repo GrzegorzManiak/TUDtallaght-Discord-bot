@@ -1,7 +1,7 @@
 const bot = require('../source')
 let config = bot.getConfig();
 
-let interactables = (guild) => {
+let interactables = () => {
     return new bot.discordjs.MessageActionRow()
         .addComponents(
             new bot.discordjs.MessageSelectMenu()

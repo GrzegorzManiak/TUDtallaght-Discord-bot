@@ -21,7 +21,7 @@ let config = {
     },
     commands: {},
     logCommands: false,
-    allowslashcommands: false,
+    allowslashcommands: true,
     allowdmcommands: false,
     allowdminteractions: false,
     prefix: '.',

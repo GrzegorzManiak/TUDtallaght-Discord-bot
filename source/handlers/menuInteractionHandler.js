@@ -14,7 +14,7 @@ exports.menuInteractionHandler = async(interaction) => {
 
     switch(hasPermissions){
         case true:
-            return command?.menuCallback(parameters, interaction, { values:interaction.values, roles });   
+            return command?.menuCallback(parameters, interaction, { values:interaction.values, roles, user });   
 
         case false:
             return interaction.reply({ 
