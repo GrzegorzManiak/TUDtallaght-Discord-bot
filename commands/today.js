@@ -98,14 +98,14 @@ function returnClasses(message, specificDay, edit = false, slashCommand, roles) 
             // add a 'day before' button to the embed which edits the original message with the classes for the prior day
             .addComponents(
                 new bot.discordjs.MessageButton()
-                .setCustomId(bot.createCustomID('today', { action: 'daybefore' }))
+                .setCustomId(bot.createCustomID('today', { action: 'daybefore', day: yesterday() }))
                 .setLabel("Day before")
                 .setStyle('PRIMARY')
             )
             // add a 'day after' button to the embed which edits the original message with the classes for the following day
             .addComponents(
                 new bot.discordjs.MessageButton()
-                .setCustomId(bot.createCustomID('today', { action: 'dayafter' }))
+                .setCustomId(bot.createCustomID('today', { action: 'dayafter', day: tommorow() }))
                 .setLabel("Day after")
                 .setStyle('PRIMARY')
             );
@@ -180,13 +180,12 @@ exports.command = {
                 return;
 
             case 'daybefore':
-                console.log(parameters)
-                returnClasses(interaction, parseInt(parameters[3]), true, false, obj.roles);
+                returnClasses(interaction, parseInt(parameters.day), true, false, obj.roles);
                 interaction.deferUpdate();
                 return;
 
             case 'dayafter':
-                returnClasses(interaction, parseInt(parameters[3]), true, false, obj.roles);
+                returnClasses(interaction, parseInt(parameters.day), true, false, obj.roles);
                 interaction.deferUpdate();
                 return;
         }
