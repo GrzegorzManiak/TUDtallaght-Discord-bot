@@ -18,13 +18,14 @@ exports.command = {
     },
     commandCallback: function(parameters, message, obj = { isSlashCommand:false }) {
         // Im tring to avoid long path chains with process.cwd()
-        let timetableHelper = require(process.cwd() + '\\helpers\\timetable.js'),
-            classgroup = obj.roles.find(role => { if(global.classRoles.includes(role)) return role;}),
+        let timetableHelper = require('../helpers/timetable'),
+            classgroupname = '';
+            classgroup = obj.roles.find(role => { if(global.classRoles.includes(role.toLowerCase())) return classgroupname = role.toLowerCase();}),
             userName = message.user ?? message.author,
             embedArray = [],
             timetable = [];
-
-        switch(classgroup){
+            
+        switch(classgroupname){
             case global.classRoles[0]: timetable = timetableHelper.a1; break;
             case global.classRoles[1]: timetable = timetableHelper.a2; break;
             case global.classRoles[2]: timetable = timetableHelper.b1; break;
