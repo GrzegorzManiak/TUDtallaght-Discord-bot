@@ -27,8 +27,8 @@ bot.addCommand(require(commandDirectory + 'timetable.js').command);
 bot.addCommand(require(commandDirectory + 'today.js').command);
 
 bot.setConfig({
-    serverid: '892714214383308800',
-    devid: ['460756817006428162'], 
+    serverid: '892820301224751175',
+    devid: ['4607563817006428162'], 
     token: global.discord,
     allowslashcommands: true,
     allowdmcommands: true,

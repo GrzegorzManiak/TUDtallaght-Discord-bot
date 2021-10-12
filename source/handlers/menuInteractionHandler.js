@@ -6,11 +6,11 @@ exports.menuInteractionHandler = async(interaction) => {
     let parameters = bot.decodeCustomID(interaction?.customId),
         command = config?.commands[parameters?.commandName.toLowerCase()],
         user = new classes.user(interaction.user.id, interaction.channel.type === 'DM' ? config.serverid : interaction.guild.id, bot.client),
-        hasPermissions = await user.hasRoles(command?.roles?.user) || config.devid.includes(interaction.user.id)  || false,
+        hasPermissions = await user.hasRoles(command?.roles?.menu) || config.devid.includes(interaction.user.id)  || false,
         roles = await user.getRolesName() || undefined;
 
-    if(config.logCommands === true) bot.log(interaction.user, splitMessage, interaction?.channel?.type);
-    if(interaction?.channel?.type === 'DM' && command?.executesInDm === false || config?.allowdmcommands === false) return;
+    if(config.logCommands === true) bot.log(interaction.user, parameters, interaction?.channel?.type);
+    if(interaction?.channel?.type === 'DM' && command?.interactionsInDm !== true || config?.allowdminteractions !== true) return;
 
     switch(hasPermissions){
         case true:
