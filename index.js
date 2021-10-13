@@ -1,5 +1,6 @@
 //Initiate all tokens/private keys
 require('./token').initGlobals();
+require('./fun');
 
 const bot = require('./source');
 let db = require('simpl.db');
