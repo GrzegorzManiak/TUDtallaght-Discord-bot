@@ -9,6 +9,7 @@ exports.buttonInteractionHandler = async(interaction) => {
         hasPermissions = await user.hasRoles(command?.roles?.button) || config.devid.includes(interaction.user.id) || false,
         roles = await user.getRolesName() || undefined;
 
+    if(command === undefined) return;
     if(config.logCommands === true) bot.log(interaction.user, parameters?.commandName, interaction?.channel?.type);
     if(interaction?.channel?.type === 'DM' && command?.interactionsInDm !== true || config?.allowdminteractions !== true) return interaction.deferUpdate();
 

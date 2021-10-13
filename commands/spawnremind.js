@@ -7,7 +7,8 @@ let interactables = () => {
             new bot.discordjs.MessageSelectMenu()
             .setCustomId(bot.createCustomID('spawnremind', { action: 'select' }))
             .addOptions([
-                { label: 'Dont remind me', value: '0' },
+                { label: 'Dont remind me', value: 'false' },
+                { label: 'As the class starts', value: '0' },
                 { label: '5 Min Before', value: '5' },
                 { label: '10 Min Before', value: '10' },
                 { label: '15 Min Before', value: '15' },
@@ -40,7 +41,7 @@ exports.command = {
         commandShortDescription: 'This command reminds you of your class some time before it starts.',
     },
 
-    commandCallback: async function(parameters, interaction, obj = { isSlashCommand:false }) {
+    commandCallback: async function(parameters, interaction, obj = { isSlashCommand: false }) {
         let channel,
             user = await obj.user.getUser();
 
@@ -79,11 +80,23 @@ exports.command = {
     });
     },
 
-    buttonCallback: function(parameters, interaction, obj) {
-        switch(parameters.action){
-            case 'optout':
-                break;
-        }
+    menuCallback: async function(parameters, interaction, obj) {
+        let classgroupname = undefined;
+            classgroup = obj.roles.find(role => { if(global.classRoles.includes(role.toLowerCase())) return classgroupname = role.toLowerCase() });
+
+        if(classgroupname === undefined) return interaction.reply({
+            content:`<@${interaction.user.id}>, You are not registerd under any class groups.`,
+            ephemeral: true
+        });
+
+        let currentEntry = global.users.get(user => user.userid === interaction.user.id); 
+        if(currentEntry === null) global.users.create({ userid: interaction.user.id, group: classgroupname, alertme: parseInt(obj.values[0]) });
+        else global.users.update({ alertme: parseInt(obj.values[0]), group: classgroupname }, user => user.userid === interaction.user.id);
+
+        interaction.reply({
+            content:`<@${interaction.user.id}>, We will remind you **${obj.values[0]}** Min before before class!.`,
+            ephemeral: true
+        });
     },
 
     executesInDm: false,

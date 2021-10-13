@@ -14,12 +14,13 @@ exports.commandHandler = async(message) => {
         hasPermissions = await user.hasRoles(command?.roles?.user) || config?.devid?.includes(message?.author?.id) || false,
         roles = await user.getRolesName() || undefined;
 
+    if(command === undefined) return;
     if(config.logCommands === true) bot.log(message.author, splitMessage, message?.channel?.type);
     if(message?.channel?.type === 'DM' && command?.executesInDm === false || config?.allowdmcommands === false) return;
 
     switch(hasPermissions) {
         case true:
-            return command.commandCallback(splitMessage, message, { roles, isSlashCommand: false, user });
+            return command?.commandCallback(splitMessage, message, { roles, isSlashCommand: false, user });
 
         case false:
             return message.channel.send({ 

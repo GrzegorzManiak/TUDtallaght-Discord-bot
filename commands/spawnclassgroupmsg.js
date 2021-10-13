@@ -89,6 +89,10 @@ exports.command = {
             user.roles.remove(removeRole).then(()=>{
                 user.roles.add(addRole)
                 .then(()=>{
+                    let currentEntry = global.users.get(user => user.userid === interaction.user.id); 
+                    if(currentEntry === null) global.users.create({ userid: interaction.user.id, group: obj.values[0], alertme: 0 });
+                    else global.users.update({ group: obj.values[0] }, user => user.userid === interaction.user.id);
+
                     interaction.reply({ 
                         content:`<@${interaction.user.id}>, Successfully updated your role!`,
                         ephemeral: true
