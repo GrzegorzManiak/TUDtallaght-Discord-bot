@@ -109,3 +109,8 @@ package-lock.json
 token.js
 token.js
 token.js
+package-lock.json
+database.json
+token.js
+collections/settings.json
+collections/users.json

@@ -18,7 +18,7 @@ exports.slashInteractionHandler = async(interaction) =>{
 
     switch(hasPermissions) {
         case true:
-            return command.commandCallback(splitMessage, interaction, { roles, isSlashCommand: true});
+            return command.commandCallback(splitMessage, interaction, { roles, isSlashCommand: true, user});
 
         case false:
             return interaction.reply({ 
