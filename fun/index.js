@@ -6,7 +6,7 @@ bot.client.on('messageCreate', async(message) => {
     let userManger = new classes.user(message?.user?.id || message?.author?.id, message.channel.type === 'DM' ? config.serverid : message.guild.id, bot.client),
         user = await userManger.getUser();
 
-    if(user.id === bot.client.id) return;
+    if(user?.id === bot?.client?.id) return;
 
     retard(message, user);
 });
