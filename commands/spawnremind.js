@@ -45,56 +45,61 @@ exports.command = {
         let channel,
             user = await obj.user.getUser();
 
-        if(parameters[1] !== undefined) channel = bot.client.channels.cache.get(parameters[1]);
+        if (parameters[1] !== undefined) channel = bot.client.channels.cache.get(parameters[1]);
         else channel = interaction.channel;
 
-        if (channel === undefined){
-            if(obj.isSlashCommand === true) return interaction.reply({ 
-                content:`<@${user.id}>, Invalid parameter, could not locate the channel.`,
+        if (channel === undefined) {
+            if (obj.isSlashCommand === true) return interaction.reply({
+                content: `<@${user.id}>, Invalid parameter, could not locate the channel.`,
                 ephemeral: true
             }); //Inform the user that the command failed
             else return interaction.channel.send({
-                content:`<@${user.id}>, Invalid parameter, could not locate the channel.`,
-                fetchReply:true
-            }).then((msg) => bot.createTimedDelete(msg, 0.2)); 
+                content: `<@${user.id}>, Invalid parameter, could not locate the channel.`,
+                fetchReply: true
+            }).then((msg) => bot.createTimedDelete(msg, 0.2));
         }
 
         channel.send({
-            embeds:[embed()], 
-            components: [interactables()], 
-            fetchReply: true 
-        }).then(()=>{
-            if(obj.isSlashCommand === true) interaction.reply({
-                content:`<@${interaction.user.id}>, Message sent successfully`,
+            embeds: [embed()],
+            components: [interactables()],
+            fetchReply: true
+        }).then(() => {
+            if (obj.isSlashCommand === true) interaction.reply({
+                content: `<@${interaction.user.id}>, Message sent successfully`,
                 ephemeral: true
             });
             else interaction.delete();
-        }).catch(()=>{
-            if(obj.isSlashCommand === true) interaction.reply({
-                content:`<@${interaction.user.id}>, Message failed to send`,
+        }).catch(() => {
+            if (obj.isSlashCommand === true) interaction.reply({
+                content: `<@${interaction.user.id}>, Message failed to send`,
                 ephemeral: true
             });
             else interaction.channel.send({
-                content:`<@${interaction.user.id}>, Message failed to send.`,
+                content: `<@${interaction.user.id}>, Message failed to send.`,
             });
-    });
+        });
     },
 
     menuCallback: async function(parameters, interaction, obj) {
         let classgroupname = undefined;
-            classgroup = obj.roles.find(role => { if(global.classRoles.includes(role.toLowerCase())) return classgroupname = role.toLowerCase() });
+        classgroup = obj.roles.find(role => { if (global.classRoles.includes(role.toLowerCase())) return classgroupname = role.toLowerCase() });
 
-        if(classgroupname === undefined) return interaction.reply({
-            content:`<@${interaction.user.id}>, You are not registerd under any class groups.`,
+        if (classgroupname === undefined) return interaction.reply({
+            content: `<@${interaction.user.id}>, You are not registerd under any class groups.`,
             ephemeral: true
         });
 
-        let currentEntry = global.users.get(user => user.userid === interaction.user.id); 
-        if(currentEntry === null) global.users.create({ userid: interaction.user.id, group: classgroupname, alertme: parseInt(obj.values[0]) });
+        let currentEntry = global.users.get(user => user.userid === interaction.user.id);
+        if (currentEntry === null) global.users.create({ userid: interaction.user.id, group: classgroupname, alertme: parseInt(obj.values[0]) });
         else global.users.update({ alertme: parseInt(obj.values[0]), group: classgroupname }, user => user.userid === interaction.user.id);
 
+        let reply = '';
+        if (obj.values[0] === 'false') reply = `<@${interaction.user.id}>, We will no longer remind you of your upcomming classes.`;
+        else if (obj.values[0] === '0') reply = `<@${interaction.user.id}>, We will remind you of your classes as they start.`;
+        else reply = `<@${interaction.user.id}>, We will remind you **${obj.values[0]}** Min before each class!.`;
+
         interaction.reply({
-            content:`<@${interaction.user.id}>, We will remind you **${obj.values[0]}** Min before before class!.`,
+            content: reply,
             ephemeral: true
         });
     },
