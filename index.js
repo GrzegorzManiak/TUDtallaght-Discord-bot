@@ -113,7 +113,7 @@ bot.startBot().then(async(client) => {
                                     let tagAlong = '';
 
                                     users.forEach(user => {
-                                        tagAlong += `<@${user}>`;
+                                        tagAlong += `>>> <@${user}> `;
                                     })
 
                                     let embed = {
@@ -123,7 +123,7 @@ bot.startBot().then(async(client) => {
                                         thumbnail: {
                                             url: global.logo,
                                         },
-                                        description: `**${key.className}** starts at **${key.startTime}** which is in **${timeTillNextClass}** Min, ${key.class} \n \n >>> ${tagAlong}`,
+                                        description: `**${key.className}** starts at **${key.startTime}** which is in **${timeTillNextClass}** Min, ${key.class}`,
                                         content: tagAlong,
                                         footer: {
                                             text: `Made by Grzegorz M | [SpawnRemind]`,
@@ -131,7 +131,12 @@ bot.startBot().then(async(client) => {
                                         },
                                     };
                                     if(bot.getConfig().logCommands === true) console.log(`sent out ${key.className} ${key.startTime} ${timeTillNextClass}`);
-                                    channel.send({ embeds: [embed] });
+                                    channel.send({ 
+                                        embeds: [embed], 
+                                        fetchReply: true
+                                    }).then(() => {
+                                        channel.send(tagAlong);
+                                    });
                                 }
                             }, sleepFor * 60000);
                         }
