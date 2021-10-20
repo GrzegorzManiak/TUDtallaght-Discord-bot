@@ -49,7 +49,7 @@ exports.startBot = async() => {
         // confirm that the bot authenticated
         client.on('ready', () => {
             console.log(`Logged in as ${client.user.tag}, ${client.user.id}!`);
-            if(config.useSlashCommands === true) addSlashCommands();
+            if(config.allowslashcommands === true) addSlashCommands();
             resolve(client);
         });
     });
@@ -122,8 +122,8 @@ exports.addCommand = async function addCommand(params) {
 }
 
 function addSlashCommands() {
-    let guild = client.guilds.cache.get(config.serverid);
-    let commands = guild.commands;
+    let guild = client.guilds.cache.get(config.serverid),
+        commands = guild.commands;
 
     Object.keys(config.commands).forEach(command => {
         if(config.commands[command]?.isSlashCommand !== true) return;

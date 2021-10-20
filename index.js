@@ -39,7 +39,7 @@ bot.addCommand(require(commandDirectory + 'timetable.js').command);
 bot.addCommand(require(commandDirectory + 'today.js').command);
 
 //--// gets the users next class //--//
-bot.addCommand(require(commandDirectory + 'next.js').command);
+// bot.addCommand(require(commandDirectory + 'next.js').command);
 
 bot.setConfig({
     serverid: '892820301224751175',
@@ -104,7 +104,6 @@ bot.startBot().then(async(client) => {
                             setTimeout(function() {
                                 let users = [];
                                 global.users.get(user => {
-                                    //sconsole.log(user.alertme.toString(),remindMe.toString(),user.group,timetable)
                                     if (user.group === timetable && user.alertme.toString() === remindMe.toString() && user.alertme !== 'false') users = [...users, user.userid];
                                 });
 
@@ -112,33 +111,16 @@ bot.startBot().then(async(client) => {
                                 if (channel === undefined) return console.log('!!!ERR REMINDME CHANNEL DOSE NOT EXIST!!!');
 
                                 if (users?.length > 0) {
-                                    let tagAlong = '';
+                                    let tagAlong = '>>>';
 
                                     users.forEach(user => {
-                                        tagAlong += `>>> <@${user}> `;
+                                        tagAlong += ` <@${user}> \n`;
                                     })
 
-                                    let embed = {
-                                        color: 0x0099ff,
-                                        title: `Reminder for **${key.className}**`,
-                                        url: global.github,
-                                        thumbnail: {
-                                            url: global.logo,
-                                        },
-                                        description: `**${key.className}** starts at **${key.startTime}** which is in **${timeTillNextClass}** Min, ${key.class}`,
-
-                                        content: tagAlong,
-                                        footer: {
-                                            text: `Made by Grzegorz M | [SpawnRemind]`,
-                                            icon_url: global.logo,
-                                        },
-                                    };
                                     if(bot.getConfig().logCommands === true) console.log(`sent out ${key.className} ${key.startTime} ${timeTillNextClass}`);
+                                    
                                     channel.send({ 
-                                        embeds: [embed], 
-                                        fetchReply: true
-                                    }).then(() => {
-                                        channel.send(tagAlong);
+                                        content: `**${key.className}** starts at **${key.startTime}** which is in **${timeTillNextClass}** Min, ${key.class}. ${tagAlong}` 
                                     });
                                 }
                             }, sleepFor * 60000);
