@@ -121,9 +121,9 @@ exports.addCommand = async function addCommand(params) {
     config.commands[params?.details?.commandName.toLowerCase()] = commandTemp;
 }
 
-function addSlashCommands() {
-    let guild = client.guilds.cache.get(config.serverid),
-        commands = guild.commands;
+async function addSlashCommands() {
+    let guild = await client.guilds.fetch(config.serverid);
+    let commands = guild.commands;
 
     Object.keys(config.commands).forEach(command => {
         if(config.commands[command]?.isSlashCommand !== true) return;

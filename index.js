@@ -38,18 +38,21 @@ bot.addCommand(require(commandDirectory + 'timetable.js').command);
 //--// gets the classes for that day //--//
 bot.addCommand(require(commandDirectory + 'today.js').command);
 
+//--// converts bases //--//
+bot.addCommand(require(commandDirectory + 'convertbase.js').command);
+
 //--// gets the users next class //--//
 // bot.addCommand(require(commandDirectory + 'next.js').command);
 
 bot.setConfig({
-    serverid: '892820301224751175',
+    serverid: '892714214383308800',
     devid: ['460756817006428162'],
     token: global.discord,
     allowslashcommands: true,
     allowdmcommands: true,
     allowdminteractions: true,
     logCommands: true,
-    remindme: true
+    remindme: false
 });
 
 bot.startBot().then(async(client) => {
