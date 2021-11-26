@@ -110,7 +110,7 @@ exports.command = {
 
     roles: {
         user: global.adminRoles,
-        menu: global.userRoles
+        menu: []
     },
 
     parameters: [
