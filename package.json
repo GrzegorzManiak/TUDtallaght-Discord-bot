@@ -7,6 +7,9 @@
         "debug": "nodemon index.js",
         "main": "node index.js"
     },
+    "nodemonConfig": {
+        "ignore": ["collections/*"]
+    },
     "author": "GrzegorzM",
     "license": "GNU",
     "homepage": "https://github.com/KetamineKyle/TUDtallaght-Discord-bot",

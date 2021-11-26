@@ -30,12 +30,12 @@ let config = {
 }
 
 // sets the current configuration
-exports.setConfig = (obj)=>{
+exports.setConfig = (obj) => {
     Object.assign(config, obj);
 }
 
 // returns the current configuration
-exports.getConfig = ()=>{
+exports.getConfig = () => {
     return config;
 }
 
@@ -49,7 +49,7 @@ exports.startBot = async() => {
         // confirm that the bot authenticated
         client.on('ready', () => {
             console.log(`Logged in as ${client.user.tag}, ${client.user.id}!`);
-            if(config.allowslashcommands === true) addSlashCommands();
+            addSlashCommands();
             resolve(client);
         });
     });
@@ -69,10 +69,10 @@ client.on('messageReactionAdd', async(reaction, user) => {
 
 // triggers everytime a interaction is created.
 client.on('interactionCreate', async(interaction) => {
-    if (interaction?.componentType === 'BUTTON') 
+    if (interaction?.componentType === 'BUTTON')
         require('./handlers/buttonInteractionHandler').buttonInteractionHandler(interaction);
 
-    else if (interaction?.commandName) 
+    else if (interaction?.commandName)
         require('./handlers/slashInteractionHandler.js').slashInteractionHandler(interaction);
 
     else if (interaction?.componentType === 'SELECT_MENU')
@@ -110,11 +110,11 @@ exports.addCommand = async function addCommand(params) {
         executesInDm: false, // Can the command execute in the users DM, Will use role data from the server defined in the config.serverid, leave false otherwise
         interactionsInDm: true, // If a msg is sent to the user with attached interactables, can the user use them?
         isSlashCommand: true, // Can this command be executed with discord slash commands?
-        helpEmbedPage: 0, 
+        helpEmbedPage: 0,
 
-        commandCallback: function(parameters, interaction, obj = {roles, isSlashCommand}){},
-        menuCallback: function(parameters, interaction, obj = {values, roles}){},
-        buttonCallback: function(parameters, interaction, obj = {roles}){}
+        commandCallback: function(parameters, interaction, obj = { roles, isSlashCommand }) {},
+        menuCallback: function(parameters, interaction, obj = { values, roles }) {},
+        buttonCallback: function(parameters, interaction, obj = { roles }) {}
     }
 
     Object.assign(commandTemp, params);
@@ -126,19 +126,19 @@ async function addSlashCommands() {
     let commands = guild.commands;
 
     Object.keys(config.commands).forEach(command => {
-        if(config.commands[command]?.isSlashCommand !== true) return;
+        if (config.commands[command]?.isSlashCommand !== true) return;
 
         let data = new slashCommandBuilder()
-	        .setName(command)
-	        .setDescription(config.commands[command].details.commandShortDescription);
+            .setName(command)
+            .setDescription(config.commands[command].details.commandShortDescription);
 
-        if(config.commands[command]?.parameters?.length > 0){
+        if (config.commands[command]?.parameters?.length > 0) {
             config.commands[command].parameters.forEach(param => {
-                function setParams(option){
+                function setParams(option) {
                     return option.setName(param.name).setDescription(param.description).setRequired(param?.required || false);
                 }
 
-                switch(param.type){
+                switch (param.type) {
                     case 'string':
                         data.addStringOption(option => setParams(option))
                         break;
@@ -170,6 +170,6 @@ exports.decodeCustomID = (b64 = '') => {
     return JSON.parse(atob(b64));
 }
 
-exports.log = function(user, command, type){
+exports.log = function(user, command, type) {
     console.log(`${user.id}:${user.tag} Attempted ${command} in ${type}`);
 }
